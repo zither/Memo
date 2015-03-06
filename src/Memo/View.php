@@ -238,7 +238,7 @@ class View
     public function getPath($template)
     {
         foreach ($this->folders as $folder) {
-            $path = sprintf("%s/%s.%s", $folder, $template, $this->extension);
+            $path = sprintf("%s/%s.%s", rtrim($folder, "/\\"), $template, $this->extension);
             if (file_exists($path)) {
                 return $path;
             }
