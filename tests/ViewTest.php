@@ -38,6 +38,14 @@ class ViewTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(array("./data", "./template"), $this->view->folders);
     }
 
+    public function testSetExtension()
+    {
+        $this->view->setExtension("html");
+        $this->assertEquals("html", $this->view->extension);
+        $this->view->setExtension(".php");
+        $this->assertEquals("php", $this->view->extension);
+    }
+
     public function testLayout()
     {
         $this->view->layout("base");

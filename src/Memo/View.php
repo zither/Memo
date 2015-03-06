@@ -43,7 +43,7 @@ class View
      *
      * @var string
      */
-    protected $extension = ".php";
+    protected $extension = "php";
 
     /**
      * Helper instance
@@ -106,6 +106,16 @@ class View
     public function addFolder($folder)
     {
         array_push($this->folders, $folder);
+    }
+
+    /**
+     * Set template extension
+     *
+     * @param string $extension
+     */
+    public function setExtension($extension)
+    {
+        $this->extension = ltrim($extension, ".");
     }
 
     /**
@@ -218,12 +228,14 @@ class View
     public function getPath($template)
     {
         foreach ($this->folders as $folder) {
-            $path = sprintf("%s/%s%s", $folder, $template, $this->extension);
+            $path = sprintf("%s/%s.%s", $folder, $template, $this->extension);
             if (file_exists($path)) {
                 return $path;
             }
         }
-        throw new \InvalidArgumentException("Invalid template!");
+        throw new \InvalidArgumentException(
+            sprintf("Invalid template: %s.%s!", $template, $this->extension)
+        );
     }
 
     /**
@@ -244,7 +256,7 @@ class View
     public function setHelper($helper)
     {
         if (!is_object($helper)) {
-            throw new \InvalidArgumentException("Helper should be an object.");
+            throw new \InvalidArgumentException("Helper must be an object.");
         }
         $this->helper = $helper;
     }
