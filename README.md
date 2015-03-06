@@ -1,2 +1,3 @@
 # Memo
-The Memo Framework Components.
+
+Memo Components.
