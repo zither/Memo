@@ -10,13 +10,27 @@ class ViewTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->view = new View();
-        $this->view->addFolder("./data");
+        $this->view->addFolder(__DIR__ . "/data");
     }
 
     public function testConstruct()
     {
-        $view = new View("index.template");
+        $helper = function () {
+            return 1;
+        };
+        $settings = array(
+            "template" => "index.template",
+            "folders" => array(__DIR__ . "/data"),
+            "extension" => "html",
+            "helper" => $helper,
+            "invalid" => "undefined"
+        );
+        $view = new View($settings);
         $this->assertEquals("index.template", $view->template);
+        $this->assertEquals(array(__DIR__ . "/data"), $view->folders);
+        $this->assertEquals("html", $view->extension);
+        $this->assertEquals($helper, $view->helper);
+        $this->assertFalse($view->invalid);
     }
 
     public function testSetTemplate()
@@ -33,9 +47,9 @@ class ViewTest extends PHPUnit_Framework_TestCase
 
     public function testAddFolder()
     {
-        $newFolder = "./template";
+        $newFolder = "./template/";
         $this->view->addFolder($newFolder);
-        $this->assertEquals(array("./data", "./template"), $this->view->folders);
+        $this->assertEquals(array(__DIR__ . "/data", "./template"), $this->view->folders);
     }
 
     public function testSetExtension()
@@ -73,6 +87,11 @@ class ViewTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(empty($this->view->sectionStack));
         $this->assertEquals("hello,world!", $this->view->sections['content']);
 
+        $this->view->open('content');
+        ?>Can't overwrite<?php
+        $this->view->close();
+        $this->assertEquals("hello,world!", $this->view->sections['content']);
+
         $this->view->close();
     }
 
@@ -96,7 +115,7 @@ class ViewTest extends PHPUnit_Framework_TestCase
      */
     public function testGetPath()
     {
-        $this->assertEquals("./data/index.template.php", $this->view->getPath("index.template"));
+        $this->assertEquals(__DIR__ . "/data/index.template.php", $this->view->getPath("index.template"));
         $this->view->getPath("undefine");
     }
 
@@ -118,7 +137,7 @@ class ViewTest extends PHPUnit_Framework_TestCase
 
     public function testDisplay()
     {
-        $this->expectOutputString("<html><p>hello,Joe!</p><p>hello@example.com</p></html>\n");
+        $this->expectOutputString("<html><p>hello,Joe!</p><p>hello@example.com</p></html>");
         $this->view->setTemplate('contact.template');
         $this->view->assign("name", "Joe");
         $this->view->display();
@@ -150,7 +169,7 @@ class ViewTest extends PHPUnit_Framework_TestCase
 
     public function testPropertyGetter()
     {
-        $this->assertEquals(array('./data'), $this->view->folders);
+        $this->assertEquals(array(__DIR__ . '/data'), $this->view->folders);
         $this->assertFalse($this->view->undefine);
     }
 } 

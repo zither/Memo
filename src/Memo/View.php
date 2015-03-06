@@ -69,12 +69,19 @@ class View
     /**
      * Constructor
      *
-     * @param string $template
+     * @param array $userSettings
      */
-    public function __construct($template = null)
+    public function __construct(Array $userSettings = array())
     {
-        if (!is_null($template)) {
-            $this->template = $template;
+        $validProperties = array("template", "folders", "extension", "helper");
+        $userSettings = array_intersect_key(
+            $userSettings, 
+            array_flip($validProperties)
+        );
+       
+        foreach ($userSettings as $property => $value) {
+            $method = sprintf("set%s", ucfirst(strtolower($property)));
+            call_user_func(array($this, $method), $value);
         }
     }
 
@@ -105,7 +112,7 @@ class View
      */
     public function addFolder($folder)
     {
-        array_push($this->folders, $folder);
+        array_push($this->folders, rtrim($folder, '/'));
     }
 
     /**
@@ -152,11 +159,14 @@ class View
     {
         if (empty($this->sectionStack)) {
             throw new \LogicException(
-                'Have to open a section before calling the close method.'
+                'Must open a section before calling the close method.'
             );
         }
+        $content = ob_get_clean();
         $section = array_pop($this->sectionStack);
-        $this->sections[$section] = ob_get_clean();
+        if (!isset($this->sections[$section])) {
+            $this->sections[$section] = $content;
+        }
     }
 
     /**
@@ -213,7 +223,7 @@ class View
             );
             throw new \LogicException($message);
         }
-        return ob_get_clean();
+        return trim(ob_get_clean());
     }
 
     /**
@@ -256,9 +266,26 @@ class View
     public function setHelper($helper)
     {
         if (!is_object($helper)) {
-            throw new \InvalidArgumentException("Helper must be an object.");
+            $message = sprintf(
+                "Helper must be of the type object, %s given.",
+                getType($helper)
+            );
+            throw new \InvalidArgumentException($message);
         }
         $this->helper = $helper;
+    }
+
+    /**
+     * Property getter
+     *
+     * @param mixed $property
+     */
+    public function __get($property)
+    {
+        if (property_exists($this, $property)) {
+            return $this->$property;
+        }
+        return false;
     }
 
     /**
@@ -279,18 +306,5 @@ class View
             );        
         }
         return call_user_func_array(array($this->helper, $method), $arguments);
-    }
-
-    /**
-     * Property getter
-     *
-     * @param mixed $property
-     */
-    public function __get($property)
-    {
-        if (property_exists($this, $property)) {
-            return $this->$property;
-        }
-        return false;
     }
 }
