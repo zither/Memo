@@ -142,7 +142,7 @@ class View
     {
         if (empty($this->sectionStack)) {
             throw new \LogicException(
-                'You must open a section before calling the close method.'
+                'Have to open a section before calling the close method.'
             );
         }
         $section = array_pop($this->sectionStack);
