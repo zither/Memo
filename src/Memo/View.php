@@ -294,15 +294,15 @@ class View
      * @param mixed $method
      * @param mixed $arguments
      *
-     * @throws \BadFunctionCallException
+     * @throws \BadMethodCallException
      *
      * @return mixed
      */
     public function __call($method, $arguments) 
     {
         if (is_null($this->helper) || !method_exists($this->helper, $method)) {
-            throw new \BadFunctionCallException(
-                sprintf("Undefine method %s:%s!", __CLASS__, $method)
+            throw new \BadMethodCallException(
+                sprintf("Call to undefined method %s::%s!", __CLASS__, $method)
             );        
         }
         return call_user_func_array(array($this->helper, $method), $arguments);

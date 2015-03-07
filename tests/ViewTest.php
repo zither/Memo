@@ -155,7 +155,7 @@ class ViewTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \BadFunctionCallException
+     * @expectedException \BadMethodCallException
      */
     public function testCallHelperFunction()
     {
