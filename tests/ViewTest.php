@@ -135,6 +135,15 @@ class ViewTest extends PHPUnit_Framework_TestCase
         $this->view->render();
     }
 
+    /**
+     * @expectedException \BadMethodCallException
+     */
+    public function testBadMethodCall()
+    {
+        $this->view->setTemplate("method.template");
+        $this->view->render();
+    }
+
     public function testDisplay()
     {
         $this->expectOutputString("<html><p>hello,Joe!</p><p>hello@example.com</p></html>");

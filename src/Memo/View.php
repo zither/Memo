@@ -205,17 +205,25 @@ class View
      */
     public function render()
     {
-        ob_start();
-        extract($this->shareVars, EXTR_OVERWRITE);
-        include $this->getPath($this->template);
+        try {
+            // get the current level of the output buffering mechanism
+            $level = ob_get_level();
+            ob_start();
+            extract($this->shareVars, EXTR_OVERWRITE);
+            include $this->getPath($this->template);
 
-        // Include all layouts from the layout queue
-        while (count($this->layouts) > 0) {
-            include $this->getPath(array_shift($this->layouts));
-        }
+            // Include all layouts from the layout queue
+            while (count($this->layouts) > 0) {
+                include $this->getPath(array_shift($this->layouts));
+            }
+        } catch (\Exception $e) {
+            $this->recursiveObEndClean($level);
+            throw $e;
+        }    
 
         // Check the section stack, every section should be closed.
         if (!empty($this->sectionStack)) {
+            $this->recursiveObEndClean($level);
             $message = sprintf(
                 'Unclosed section%s: %s.', 
                 count($this->sectionStack) > 1 ? "s" : "", 
@@ -246,6 +254,18 @@ class View
         throw new \InvalidArgumentException(
             sprintf("Invalid template: %s.%s!", $template, $this->extension)
         );
+    }
+
+    /**
+     *  Recursive ob_end_clean
+     *
+     * @param int $level
+     */
+    protected function recursiveObEndClean($level = 0) 
+    {
+        while (ob_get_level() > $level) {
+            ob_end_clean();
+        }
     }
 
     /**
