@@ -112,7 +112,7 @@ class View
      */
     public function addFolder($folder)
     {
-        array_push($this->folders, rtrim($folder, '/'));
+        array_push($this->folders, rtrim($folder, "/"));
     }
 
     /**
@@ -159,7 +159,7 @@ class View
     {
         if (empty($this->sectionStack)) {
             throw new \LogicException(
-                'Must open a section before calling the close method.'
+                "Must open a section before calling the close method."
             );
         }
         $content = ob_get_clean();
@@ -225,7 +225,7 @@ class View
         if (!empty($this->sectionStack)) {
             $this->recursiveObEndClean($level);
             $message = sprintf(
-                'Unclosed section%s: %s.', 
+                "Unclosed section%s: %s.", 
                 count($this->sectionStack) > 1 ? "s" : "", 
                 implode($this->sectionStack, ",")
             );

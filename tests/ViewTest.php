@@ -41,7 +41,7 @@ class ViewTest extends PHPUnit_Framework_TestCase
 
     public function testSetFolders()
     {
-        $this->view->setFolders(array('./test'));
+        $this->view->setFolders(array("./test"));
         $this->assertEquals(array("./test"), $this->view->folders);
     }
 
@@ -81,13 +81,13 @@ class ViewTest extends PHPUnit_Framework_TestCase
      */
     public function testClose()
     {
-        $this->view->open('content');
+        $this->view->open("content");
         ?>hello,world!<?php
         $this->view->close();
         $this->assertTrue(empty($this->view->sectionStack));
         $this->assertEquals("hello,world!", $this->view->sections['content']);
 
-        $this->view->open('content');
+        $this->view->open("content");
         ?>Can't overwrite<?php
         $this->view->close();
         $this->assertEquals("hello,world!", $this->view->sections['content']);
@@ -98,7 +98,7 @@ class ViewTest extends PHPUnit_Framework_TestCase
     public function testSection()
     {
         $this->assertEquals(null, $this->view->section("content"));
-        $this->view->open('content');
+        $this->view->open("content");
         ?>hello<?php
         $this->view->close();
         $this->assertEquals("hello", $this->view->section("content"));
@@ -107,7 +107,7 @@ class ViewTest extends PHPUnit_Framework_TestCase
     public function testAssign()
     {
         $this->view->assign("content", "hello,world!");
-        $this->assertEquals("hello,world!", $this->view->shareVars['content']);
+        $this->assertEquals("hello,world!", $this->view->shareVars["content"]);
     }
 
     /**
@@ -147,7 +147,7 @@ class ViewTest extends PHPUnit_Framework_TestCase
     public function testDisplay()
     {
         $this->expectOutputString("<html><p>hello,Joe!</p><p>hello@example.com</p></html>");
-        $this->view->setTemplate('contact.template');
+        $this->view->setTemplate("contact.template");
         $this->view->assign("name", "Joe");
         $this->view->display();
     }
@@ -178,7 +178,7 @@ class ViewTest extends PHPUnit_Framework_TestCase
 
     public function testPropertyGetter()
     {
-        $this->assertEquals(array(__DIR__ . '/data'), $this->view->folders);
+        $this->assertEquals(array(__DIR__ . "/data"), $this->view->folders);
         $this->assertFalse($this->view->undefine);
     }
 } 
