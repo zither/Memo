@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<phpunit colors="true">
+    <testsuites>
+        <testsuite name="Memo framework">
+            <directory suffix="Test.php" phpVersion="5.3.0" phpVersionOperator=">=">./tests/</directory>
+        </testsuite>
+
+        <filter>
+            <directory>./src/Memo/</directory>
+        </filter>
+    </testsuites>
+</phpunit>
