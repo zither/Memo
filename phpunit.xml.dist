@@ -7,7 +7,9 @@
         </testsuite>
 
         <filter>
-            <directory>./src/Memo/</directory>
+            <whitelist>
+                <directory>./src/Memo/</directory>
+            </whitelist>
         </filter>
     </testsuites>
 </phpunit>
