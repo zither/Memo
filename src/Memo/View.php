@@ -1,6 +1,6 @@
 <?php 
 /**
-* Memo view template engine
+* Memo View
 *
 * @link https://github.com/zither/Memo
 * @copyright Copyright (c) 2015 Jun Zhou
