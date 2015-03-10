@@ -11,7 +11,7 @@ namespace Memo;
 class Autoloader
 {
     /**
-     * Shift new namespace off the beginning of prefixes
+     * For shifting new namespace off the beginning of prefixes
      *
      * @var boolean
      */
