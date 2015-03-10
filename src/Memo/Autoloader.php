@@ -11,6 +11,13 @@ namespace Memo;
 class Autoloader
 {
     /**
+     * Shift new namespace off the beginning of prefixes
+     *
+     * @var boolean
+     */
+    const PREPEND = true;
+
+    /**
      * Namespace prefixes
      *
      * @var array

@@ -1,5 +1,5 @@
 <?php
-require dirname(__DIR__) . "/src/Memo/View.php";
+require ROOT . "/src/Memo/View.php";
 
 use \Memo\View;
 
