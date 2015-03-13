@@ -233,8 +233,8 @@ class Router
      */
     protected function parsePathInfo($pathInfo) 
     {
-        $pathArray = explode('/', trim($pathInfo, '/'));
-        $this->controller =ucfirst(strtolower(array_shift($pathArray)));
+        $pathArray = explode("/", trim($pathInfo, "/"));
+        $this->controller = ucfirst(strtolower(array_shift($pathArray)));
         if (!empty($pathArray)) {
             $this->action = strtolower(array_shift($pathArray));
         }                 
@@ -338,17 +338,17 @@ class Router
     public function mock($userSettings = array())
     {
         $defaults = array(
-            'REQUEST_METHOD' => 'GET',
-            'SCRIPT_NAME' => '',
-            'PATH_INFO' => '',
-            'QUERY_STRING' => '',
-            'SERVER_NAME' => 'localhost',
-            'SERVER_PORT' => 80,
-            'ACCEPT' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            'ACCEPT_LANGUAGE' => 'zh-CN;q=0.8',
-            'ACCEPT_CHARSET' => 'utf-8,ISO-8859-1;q=0.7,*;q=0.3',
-            'USER_AGENT' => 'Memo Framework',
-            'REMOTE_ADDR' => '127.0.0.1',
+            "REQUEST_METHOD" => "GET",
+            "SCRIPT_NAME" => "",
+            "PATH_INFO" => "",
+            "QUERY_STRING" => "",
+            "SERVER_NAME" => "localhost",
+            "SERVER_PORT" => 80,
+            "ACCEPT" => "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "ACCEPT_LANGUAGE" => "zh-CN;q=0.8",
+            "ACCEPT_CHARSET" => "utf-8,ISO-8859-1;q=0.7,*;q=0.3",
+            "USER_AGENT" => "Memo Framework",
+            "REMOTE_ADDR" => "127.0.0.1",
         );
         $environment = array_merge($defaults, $userSettings);
         $this->environment = array_merge($this->environment, $environment);
