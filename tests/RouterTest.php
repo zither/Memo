@@ -143,14 +143,14 @@ class RouterTest extends PHPUnit_Framework_TestCase
     /**
      * @depends testMock
      */
-    public function testDispatchWithMetchedAction()
+    public function testDispatchWithMetchedClosure()
     {
-        $this->router->mock(array("PATH_INFO" => "/test/(\w+)"));
-        $this->router->addRoute("/test", function ($word) {
-            return "Memo Router";            
+        $this->router->mock(array("PATH_INFO" => "/test/closure"));
+        $this->router->addRoute("/test/(\w+)", function ($word) {
+            return "Test $word";            
         });
         $result = $this->router->dispatch();
-        $this->assertEquals("Memo Router", $result);
+        $this->assertEquals("Test closure", $result);
     }
 
     /**
