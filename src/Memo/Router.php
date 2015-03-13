@@ -175,7 +175,7 @@ class Router
             return false;
         }
         foreach ($this->routes as $route) {
-            preg_match('#^' . key($route) . '#', $pathInfo, $matches);
+            preg_match(sprintf("#^%s$#", key($route)), $pathInfo, $matches);
             if (empty($matches)) {
                 continue;
             }

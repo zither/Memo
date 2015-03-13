@@ -157,6 +157,17 @@ class RouterTest extends PHPUnit_Framework_TestCase
      * @depends testMock
      * @expectedException RuntimeException
      */
+    public function testDispatchWithInvalidRegularExpression()
+    {
+        $this->router->mock(array("PATH_INFO" => "/test"));
+        $this->router->addRoute("/testss", array("Index", "index"));
+        $result = $this->router->dispatch();
+    }
+
+    /**
+     * @depends testMock
+     * @expectedException RuntimeException
+     */
     public function testDispatchWithMetchedInvalidController()
     {
         $this->router->mock(array("PATH_INFO" => "/hi/Joe"));
