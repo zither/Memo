@@ -199,14 +199,13 @@ class Router
         $callback = current($route);
         if (is_object($callback) && method_exists($callback, "__invoke")) {
             $this->callback = $callback;
-            $this->processParams($matches);
+            $this->processParams(array_slice($matches, 1));
             return true;
         }
         if (is_array($callback) && count($callback) > 1) {
-            list($controller, $action) = $callback;
-            $this->controller = ucfirst(strtolower($controller));
-            $this->action = strtolower($action);
-            $this->processParams($matches);
+            $this->controller = $callback[0];
+            $this->action = $callback[1];
+            $this->processParams(array_slice($matches, 1));
             return true;
         }
         return false;
@@ -215,14 +214,14 @@ class Router
     /**
      * Process params
      *
-     * @param mixed $matches
+     * @param array $params
      *
      * @TODO: multiple params support
      */
-    protected function processParams($matches)
+    protected function processParams($params)
     {
-        if (count($matches) > 1) {
-            $this->params = array_shift(array_slice($matches, 1));
+        if (count($params) > 0) {
+            $this->params = array_shift($params);
         }
     }
 
@@ -234,9 +233,9 @@ class Router
     protected function parsePathInfo($pathInfo) 
     {
         $pathArray = explode("/", trim($pathInfo, "/"));
-        $this->controller = ucfirst(strtolower(array_shift($pathArray)));
+        $this->controller = array_shift($pathArray);
         if (!empty($pathArray)) {
-            $this->action = strtolower(array_shift($pathArray));
+            $this->action = array_shift($pathArray);
         }                 
         $this->params = empty($pathArray) ?: array_shift($pathArray);            
     }
@@ -279,7 +278,7 @@ class Router
                 strtolower($this->environment["REQUEST_METHOD"])
             );            
         }
-        $method = $this->action . $this->methodExt;
+        $method = strtolower($this->action) . $this->methodExt;
 
         if (!method_exists($controllerInstance, $method)) {
             throw new \BadMethodCallException(
@@ -313,7 +312,7 @@ class Router
         $memoController = sprintf(
             "%s\\%s", 
             $this->memoController, 
-            $this->controller
+            ucfirst(strtolower($this->controller))
         );
 
         if (class_exists($memoController)) {
