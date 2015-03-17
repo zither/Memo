@@ -290,7 +290,7 @@ class Router
             );
         }
 
-        if ($controllerInstance instanceof $this->memoController) {
+        if (method_exists($controllerInstance, "beforeActionHook")) {
             call_user_func(array($controllerInstance, "beforeActionHook"));
         }
 
