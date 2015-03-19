@@ -25,18 +25,11 @@ class View
     protected $folders = array();
 
     /**
-     * Layout queue
+     * Helper instance
      *
-     * @var array
+     * @var mixed
      */
-    protected $layouts = array();
-
-    /**
-     * shareVars
-     *
-     * @var array
-     */
-    protected $shareVars = array();
+    protected $helper = null;
 
     /**
      * Template extension
@@ -46,11 +39,11 @@ class View
     protected $extension = "php";
 
     /**
-     * Helper instance
+     * shareVars
      *
-     * @var mixed
+     * @var array
      */
-    protected $helper = null;
+    protected $shareVars = array();
 
     /**
      * section container
@@ -63,8 +56,17 @@ class View
      * section status stack
      *
      * @var array
+     * @link http://php.net/manual/en/class.splstack.php
      */
-    protected $sectionStack = array();
+    protected $sectionStack;
+
+    /**
+     * Layout queue
+     *
+     * @var \SplQueue
+     * @link http://php.net/manual/en/class.splqueue.php
+     */
+    protected $layoutQueue;
 
     /**
      * Constructor
@@ -73,6 +75,9 @@ class View
      */
     public function __construct(Array $userSettings = array())
     {
+        $this->layoutQueue = new \SplQueue();
+        $this->sectionStack = new \SplStack();
+
         $validProperties = array("template", "folders", "extension", "helper");
         $userSettings = array_intersect_key(
             $userSettings, 
@@ -132,7 +137,7 @@ class View
      */
     public function layout($layout)
     {
-        array_push($this->layouts, $layout);
+        $this->layoutQueue->enqueue($layout);
     }
 
     /**
@@ -144,7 +149,7 @@ class View
      */
     public function open($name)
     {
-        array_push($this->sectionStack, $name);
+        $this->sectionStack->push($name);
         ob_start();
     }
 
@@ -157,13 +162,13 @@ class View
      */
     public function close()
     {
-        if (empty($this->sectionStack)) {
+        if ($this->sectionStack->isEmpty()) {
             throw new \LogicException(
                 "Must open a section before calling the close method."
             );
         }
         $content = ob_get_clean();
-        $section = array_pop($this->sectionStack);
+        $section = $this->sectionStack->pop();
         if (!isset($this->sections[$section])) {
             $this->sections[$section] = $content;
         }
@@ -213,23 +218,17 @@ class View
             include $this->getPath($this->template);
 
             // Include all layouts from the layout queue
-            while (count($this->layouts) > 0) {
-                include $this->getPath(array_shift($this->layouts));
+            while (!$this->layoutQueue->isEmpty()) {
+                include $this->getPath($this->layoutQueue->dequeue());
             }
         } catch (\Exception $e) {
             $this->recursiveObEndClean($level);
             throw $e;
         }    
 
-        // Check the section stack, every section should be closed.
-        if (!empty($this->sectionStack)) {
+        if (!$this->sectionStack->isEmpty()) {
             $this->recursiveObEndClean($level);
-            $message = sprintf(
-                "Unclosed section%s: %s.", 
-                count($this->sectionStack) > 1 ? "s" : "", 
-                implode($this->sectionStack, ",")
-            );
-            throw new \LogicException($message);
+            throw new \LogicException("Not all of sections was closed.");
         }
         return trim(ob_get_clean());
     }
@@ -246,9 +245,14 @@ class View
     public function getPath($template)
     {
         foreach ($this->folders as $folder) {
-            $path = sprintf("%s/%s.%s", rtrim($folder, "/\\"), $template, $this->extension);
-            if (file_exists($path)) {
-                return $path;
+            $templatePath = sprintf(
+                "%s/%s.%s", 
+                rtrim($folder, "/\\"), 
+                $template, 
+                $this->extension
+            );
+            if (file_exists($templatePath)) {
+                return $templatePath;
             }
         }
         throw new \InvalidArgumentException(

@@ -64,7 +64,9 @@ class ViewTest extends PHPUnit_Framework_TestCase
     {
         $this->view->layout("base");
         $this->view->layout("index");
-        $this->assertEquals(array("base", "index"), $this->view->layouts);
+        $this->assertEquals("base", $this->view->layoutQueue->dequeue());
+        $this->assertEquals("index", $this->view->layoutQueue->dequeue());
+        $this->assertTrue($this->view->layoutQueue->isEmpty());
     }
 
     public function testOpen()
@@ -72,7 +74,7 @@ class ViewTest extends PHPUnit_Framework_TestCase
         $obLevel = ob_get_level();
         $this->view->open("content");
         $this->assertEquals(ob_get_level(), $obLevel + 1);
-        $this->assertEquals(array("content"), $this->view->sectionStack);
+        $this->assertEquals("content", $this->view->sectionStack->pop());
         ob_end_clean();
     }
 
