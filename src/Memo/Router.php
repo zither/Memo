@@ -324,7 +324,7 @@ class Router
         }
 
         throw new \RuntimeException(
-            sprintf("Controller dose not exists: %s", $this->controller)
+            sprintf("Controller dose not exist: %s", $this->controller)
         );
     }
 
