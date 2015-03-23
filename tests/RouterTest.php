@@ -48,7 +48,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
     public function testSetAndGetAction()
     {
         $this->router->setDefaultAction("about");
-        $this->assertEquals("about", $this->router->getAction());
+        $this->assertEquals("aboutGet", $this->router->getAction());
     }
 
     /**

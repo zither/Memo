@@ -122,7 +122,7 @@ class Router
      */
     public function getAction()
     {
-        return $this->action;
+        return $this->action . $this->methodExt;
     }
 
     /**
