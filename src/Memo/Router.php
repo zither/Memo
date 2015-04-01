@@ -57,13 +57,6 @@ class Router
     public $memoController = "\\Memo\\Controller";
 
     /**
-     * Callback
-     *
-     * @var mixed
-     */
-    public $callback = null;
-
-    /**
      * Params
      *
      * @var mixed
