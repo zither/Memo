@@ -15,18 +15,18 @@ use Psr\Http\Message\ResponseInterface;
 class Router
 {
     /**
+     * Environment
+     *
+     * @var \Slim\Http\Environment
+     */
+    public $environment;
+
+    /**
      * Routes
      *
      * @var array
      */
     public $routes = array();
-
-    /**
-     * Environment
-     *
-     * @var array
-     */
-    public $environment = array();
 
     /**
      * Controller
