@@ -8,6 +8,10 @@
 */
 namespace Memo;
 
+use Slim\Http\Environment;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+
 class Router
 {
     /**
@@ -69,9 +73,9 @@ class Router
     /**
      * Constructor
      */
-    public function __construct()
+    public function __construct(Environment $environment)
     {
-        $this->environment = array_merge($this->environment, $_SERVER);
+        $this->environment = $environment;
     }
 
     /**
@@ -146,11 +150,14 @@ class Router
     }
 
     /**
-     * Dispatch router for HTTP request
+     * Dispatch
      *
-     * @return mixed
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
+     *
+     * @return Psr\Http\Message\ResponseInterface
      */
-    public function dispatch()
+    public function dispatch(RequestInterface $request, ResponseInterface $response)
     {
         if (!isset($this->environment["PATH_INFO"])) {
             $this->environment["PATH_INFO"] = "/";
@@ -159,7 +166,24 @@ class Router
         if (!empty(trim($pathInfo, "/")) && !$this->matchRoutes($pathInfo)) {
             $this->parsePathInfo($pathInfo);
         }
-        return $this->response();
+
+        try {
+            ob_start();
+            $newResponse = $this->invokeAction($request, $response);
+            $content = ob_get_clean();
+            if ($newResponse instanceof ResponseInterface) {
+                $response = $newResponse;
+            } elseif (is_string($newResponse)) {
+                $response->write($newResponse);
+            } elseif (is_string($content)) {
+                $response->write($content);
+            }
+        } catch (\Exception $e) {
+            ob_end_clean();
+            $notFound = new \Slim\Handlers\NotFound();
+            $response = $notFound($request, $response);
+        }
+        return $response;
     }
 
     /**
@@ -197,11 +221,6 @@ class Router
     protected function processMatchedRoute($route, $matches)
     {
         $callback = current($route);
-        if (is_object($callback) && method_exists($callback, "__invoke")) {
-            $this->callback = $callback;
-            $this->processParams(array_slice($matches, 1));
-            return true;
-        }
         if (is_array($callback) && count($callback) > 1) {
             $this->controller = $callback[0];
             $this->action = $callback[1];
@@ -241,38 +260,15 @@ class Router
     }
 
     /**
-     * Response HTTP request
-     *
-     * @return mixed
-     */
-    protected function response()
-    {
-        if (!is_null($this->callback)) {
-            return $this->invokeCallback();
-        }
-        return $this->invokeAction();
-    }
-
-    /**
-     * Invoke callback function
-     *
-     * @return mixed
-     */
-    protected function invokeCallback()
-    {
-        return call_user_func($this->callback, $this->params);
-    }
-
-    /**
      * Invoke atction method
      *
      * @throws \BadMethodCallException
      *
      * @return mixed
      */
-    protected function invokeAction()
+    protected function invokeAction(RequestInterface $request, ResponseInterface $response)
     {
-        $controllerInstance = $this->instantiateController();
+        $controllerInstance = $this->instantiateController($request, $response);
         if (isset($this->environment["REQUEST_METHOD"])) {
             $this->methodExt = ucfirst(
                 strtolower($this->environment["REQUEST_METHOD"])
@@ -281,6 +277,7 @@ class Router
         $method = strtolower($this->action) . $this->methodExt;
 
         if (!method_exists($controllerInstance, $method)) {
+            var_dump($method);
             throw new \BadMethodCallException(
                 sprintf(
                     "Call to undefined method %s::%s",
@@ -307,7 +304,7 @@ class Router
      *
      * @return object
      */
-    protected function instantiateController()
+    protected function instantiateController(RequestInterface $request, ResponseInterface $response)
     {
         $memoController = sprintf(
             "%s\\%s", 
@@ -316,11 +313,11 @@ class Router
         );
 
         if (class_exists($memoController)) {
-            return new $memoController();
+            return new $memoController($request, $response);
         }
 
         if (class_exists($this->controller)) {
-            return new $this->controller();
+            return new $this->controller($request, $response);
         }
 
         throw new \RuntimeException(
@@ -336,20 +333,6 @@ class Router
      */
     public function mock($userSettings = array())
     {
-        $defaults = array(
-            "REQUEST_METHOD" => "GET",
-            "SCRIPT_NAME" => "",
-            "PATH_INFO" => "",
-            "QUERY_STRING" => "",
-            "SERVER_NAME" => "localhost",
-            "SERVER_PORT" => 80,
-            "ACCEPT" => "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            "ACCEPT_LANGUAGE" => "zh-CN;q=0.8",
-            "ACCEPT_CHARSET" => "utf-8,ISO-8859-1;q=0.7,*;q=0.3",
-            "USER_AGENT" => "Memo Framework",
-            "REMOTE_ADDR" => "127.0.0.1",
-        );
-        $environment = array_merge($defaults, $userSettings);
-        $this->environment = array_merge($this->environment, $environment);
+        $this->environment = $this->environment->mock($userSettings);
     }
 }

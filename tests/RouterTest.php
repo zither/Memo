@@ -12,12 +12,12 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->router = new Router();
+        $this->router = new Router(new \Slim\Http\Environment());
     }
 
     public function testConstruct()
     {
-        $this->assertAttributeEquals($_SERVER, "environment", $this->router);
+        $this->assertInstanceof("\Slim\Http\Environment", $this->router->environment);
     }
 
     public function testAddRoute()
@@ -74,9 +74,29 @@ class RouterTest extends PHPUnit_Framework_TestCase
      */
     public function testDispatchWithControllerAndAction()
     {
-        $this->router->mock(array("PATH_INFO" => "/index/hello/"));
-        $result = $this->router->dispatch();
-        $this->assertEquals("Hello,world!", $result);
+        $this->expectOutputString("Hello,world!");
+        $this->router->mock(array(
+            "PATH_INFO" => "/index/hello/", 
+            "SCRIPT_NAME" => "/index.php"
+        ));
+        $request = $this->createRequest($this->router->environment);
+        $response = new \Slim\Http\Response();
+
+        $response = $this->router->dispatch($request, $response);
+        $this->assertInstanceof("\Psr\Http\Message\ResponseInterface", $response);
+
+        $response->sendBody();
+    }
+
+    protected function createRequest($env) 
+    {
+        $method = $env["REQUEST_METHOD"];
+        $uri = \Slim\Http\Uri::createFromEnvironment($env);
+        $headers = \Slim\Http\Headers::createFromEnvironment($env);
+        $cookies = new \Slim\Collection(\Slim\Http\Cookies::parseHeader($headers->get("Cookie")));
+        $serverParams = new \Slim\Collection($env->all());
+        $body = new \Slim\Http\Body(fopen("php://input", "r"));
+        return new \Slim\Http\Request($method, $uri, $headers, $cookies, $serverParams, $body);    
     }
 
     /**
@@ -84,8 +104,12 @@ class RouterTest extends PHPUnit_Framework_TestCase
      */
     public function testDispatchWithDefaultControllerAndAction()
     {
-        $result = $this->router->dispatch();
-        $this->assertEquals("Default Controller And Action", $result);
+        $this->expectOutputString("Default Controller And Action");
+        $this->router->mock(array("SCRIPT_NAME" => "index.php"));
+        $request = $this->createRequest($this->router->environment);
+        $response = new \Slim\Http\Response();
+        $response = $this->router->dispatch($request, $response);
+        $response->sendBody();
     }
 
     /**
@@ -93,30 +117,46 @@ class RouterTest extends PHPUnit_Framework_TestCase
      */
     public function testDispatchWithControllerOnly()
     {
+        $this->expectOutputString("No Action");
         $this->router->setDefaultAction("about");
-        $this->router->mock(array("PATH_INFO" => "/index"));
-        $result = $this->router->dispatch();
-        $this->assertEquals("No Action", $result);
+        $this->router->mock(array(
+            "PATH_INFO" => "/index", 
+            "SCRIPT_NAME" => "index.php"
+        ));
+        $request = $this->createRequest($this->router->environment);
+        $response = new \Slim\Http\Response();
+        $response = $this->router->dispatch($request, $response);
+        $response->sendBody();
     }
 
     /**
      * @depends testMock
-     * @expectedException RuntimeException
      */
     public function testDispatchWithInvalidController()
     {
-        $this->router->mock(array("PATH_INFO" => "/invalid/invalid"));
-        $result = $this->router->dispatch();
+        $this->router->mock(array(
+            "PATH_INFO" => "/invalid/invalid", 
+            "SCRIPT_NAME" => "index.php"
+        ));
+        $request = $this->createRequest($this->router->environment);
+        $response = new \Slim\Http\Response();
+        $response = $this->router->dispatch($request, $response);
+        $this->assertEquals(404, $response->getStatusCode());
     }
 
     /**
      * @depends testMock
-     * @expectedException BadMethodCallException
      */
     public function testDispatchWithInvalidAction()
     {
-        $this->router->mock(array("PATH_INFO" => "/index/invalid"));
-        $result = $this->router->dispatch();
+        $this->router->mock(array(
+            "PATH_INFO" => "/index/invalid", 
+            "SCRIPT_NAME" => "index.php"
+        ));
+        $request = $this->createRequest($this->router->environment);
+        $response = new \Slim\Http\Response();
+        $response = $this->router->dispatch($request, $response);
+        $this->assertEquals(404, $response->getStatusCode());
     }
 
     /**
@@ -124,9 +164,15 @@ class RouterTest extends PHPUnit_Framework_TestCase
      */
     public function testDispatchWithControllerImplementsMemoController()
     {
-        $this->router->mock(array("PATH_INFO" => "/resume/about/"));
-        $result = $this->router->dispatch();
-        $this->assertEquals("Memo Controller", $result);
+        $this->expectOutputString("Memo Controller");
+        $this->router->mock(array(
+            "PATH_INFO" => "/resume/about/", 
+            "SCRIPT_NAME" => "index.php"
+        ));
+        $request = $this->createRequest($this->router->environment);
+        $response = new \Slim\Http\Response();
+        $response = $this->router->dispatch($request, $response);
+        $response->sendBody();
     }
 
     /**
@@ -134,45 +180,48 @@ class RouterTest extends PHPUnit_Framework_TestCase
      */
     public function testDispatchWithMetchedController()
     {
-        $this->router->mock(array("PATH_INFO" => "/hi/Joe"));
+        $this->expectOutputString("Hi Joe");
+        $this->router->mock(array(
+            "PATH_INFO" => "/hi/Joe", 
+            "SCRIPT_NAME" => "index.php"
+        ));
+        $request = $this->createRequest($this->router->environment);
+        $response = new \Slim\Http\Response();
         $this->router->addRoute("/hi/(\w+)", array("Index", "hi"));
-        $result = $this->router->dispatch();
-        $this->assertEquals("Hi Joe", $result);
+        $response = $this->router->dispatch($request, $response);
+        $response->sendBody();
     }
 
     /**
      * @depends testMock
-     */
-    public function testDispatchWithMetchedClosure()
-    {
-        $this->router->mock(array("PATH_INFO" => "/test/closure"));
-        $this->router->addRoute("/test/(\w+)", function ($word) {
-            return "Test $word";            
-        });
-        $result = $this->router->dispatch();
-        $this->assertEquals("Test closure", $result);
-    }
-
-    /**
-     * @depends testMock
-     * @expectedException RuntimeException
      */
     public function testDispatchWithInvalidRegularExpression()
     {
-        $this->router->mock(array("PATH_INFO" => "/test"));
+        $this->router->mock(array(
+            "PATH_INFO" => "/test", 
+            "SCRIPT_NAME" => "index.php"
+        ));
+        $request = $this->createRequest($this->router->environment);
+        $response = new \Slim\Http\Response();
         $this->router->addRoute("/testss", array("Index", "index"));
-        $result = $this->router->dispatch();
+        $response = $this->router->dispatch($request, $response);
+        $this->assertEquals(404, $response->getStatusCode());
     }
 
     /**
      * @depends testMock
-     * @expectedException RuntimeException
      */
     public function testDispatchWithMetchedInvalidController()
     {
-        $this->router->mock(array("PATH_INFO" => "/hi/Joe"));
+        $this->router->mock(array(
+            "PATH_INFO" => "/hi/Joe", 
+            "SCRIPT_NAME" => "index.php"
+        ));
+        $request = $this->createRequest($this->router->environment);
+        $response = new \Slim\Http\Response();
         $this->router->addRoute("/test/haha", array("Test", "haha"));
         $this->router->addRoute("/hi/(\w+)", array("Index"));
-        $result = $this->router->dispatch();
+        $response = $this->router->dispatch($request, $response);
+        $this->assertEquals(404, $response->getStatusCode());
     }
 }
