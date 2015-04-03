@@ -22,14 +22,13 @@ class AppTest extends PHPUnit_Framework_TestCase
 
     public function testHalt()
     {
-        $this->expectOutputString("App Halt");
         try {
-        $app = new App();
-        $app->halt(404, "App Halt");
+            $app = new App();
+            $app->halt(404, "App Halt");
         } catch (\Exception $e) {
             $this->assertInstanceOf("\\Slim\\Exception", $e);
             $this->assertEquals(404, $e->getResponse()->getStatusCode());
-            $e->getResponse()->sendBody();
+            $this->assertEquals("App Halt", (string)$e->getResponse()->getBody());
         }
     }
 

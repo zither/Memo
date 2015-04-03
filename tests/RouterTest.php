@@ -74,7 +74,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
      */
     public function testDispatchWithControllerAndAction()
     {
-        $this->expectOutputString("Hello,world!");
         $this->router->mock(array(
             "PATH_INFO" => "/index/hello/", 
             "SCRIPT_NAME" => "/index.php"
@@ -85,7 +84,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $response = $this->router->dispatch($request, $response);
         $this->assertInstanceof("\Psr\Http\Message\ResponseInterface", $response);
 
-        $response->sendBody();
+        $this->assertEquals("Hello,world!", (string)$response->getBody());
     }
 
     protected function createRequest($env) 
@@ -93,8 +92,8 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $method = $env["REQUEST_METHOD"];
         $uri = \Slim\Http\Uri::createFromEnvironment($env);
         $headers = \Slim\Http\Headers::createFromEnvironment($env);
-        $cookies = new \Slim\Collection(\Slim\Http\Cookies::parseHeader($headers->get("Cookie")));
-        $serverParams = new \Slim\Collection($env->all());
+        $cookies = new \Slim\Http\Collection(\Slim\Http\Cookies::parseHeader($headers->get("Cookie")));
+        $serverParams = new \Slim\Http\Collection($env->all());
         $body = new \Slim\Http\Body(fopen("php://input", "r"));
         return new \Slim\Http\Request($method, $uri, $headers, $cookies, $serverParams, $body);    
     }
@@ -104,12 +103,11 @@ class RouterTest extends PHPUnit_Framework_TestCase
      */
     public function testDispatchWithDefaultControllerAndAction()
     {
-        $this->expectOutputString("Default Controller And Action");
         $this->router->mock(array("SCRIPT_NAME" => "index.php"));
         $request = $this->createRequest($this->router->environment);
         $response = new \Slim\Http\Response();
         $response = $this->router->dispatch($request, $response);
-        $response->sendBody();
+        $this->assertEquals("Default Controller And Action", (string)$response->getBody());
     }
 
     /**
@@ -117,7 +115,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
      */
     public function testDispatchWithControllerOnly()
     {
-        $this->expectOutputString("No Action");
         $this->router->setDefaultAction("about");
         $this->router->mock(array(
             "PATH_INFO" => "/index", 
@@ -126,7 +123,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $request = $this->createRequest($this->router->environment);
         $response = new \Slim\Http\Response();
         $response = $this->router->dispatch($request, $response);
-        $response->sendBody();
+        $this->assertEquals("No Action", (string)$response->getBody());
     }
 
     /**
@@ -164,7 +161,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
      */
     public function testDispatchWithControllerImplementsMemoController()
     {
-        $this->expectOutputString("Memo Controller");
         $this->router->mock(array(
             "PATH_INFO" => "/resume/about/", 
             "SCRIPT_NAME" => "index.php"
@@ -172,7 +168,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $request = $this->createRequest($this->router->environment);
         $response = new \Slim\Http\Response();
         $response = $this->router->dispatch($request, $response);
-        $response->sendBody();
+        $this->assertEquals("Memo Controller", (string)$response->getBody());
     }
 
     /**
@@ -180,7 +176,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
      */
     public function testDispatchWithMetchedController()
     {
-        $this->expectOutputString("Hi Joe");
         $this->router->mock(array(
             "PATH_INFO" => "/hi/Joe", 
             "SCRIPT_NAME" => "index.php"
@@ -189,7 +184,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $response = new \Slim\Http\Response();
         $this->router->addRoute("/hi/(\w+)", array("Index", "hi"));
         $response = $this->router->dispatch($request, $response);
-        $response->sendBody();
+        $this->assertEquals("Hi Joe", (string)$response->getBody());
     }
 
     /**
