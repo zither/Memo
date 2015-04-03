@@ -1,3 +1,3 @@
 # Memo
 
-Memo is a PHP micro framework.
+Memo Framework.

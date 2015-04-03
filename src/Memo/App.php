@@ -1,4 +1,11 @@
 <?php 
+/**
+* Memo Framework (https://github.com/zither/Memo)
+*
+* @link https://github.com/zither/Memo
+* @copyright Copyright (c) 2015 Jun Zhou
+* @license https://github.com/zither/Memo/blob/master/LICENSE (MIT License)
+*/
 namespace Memo;
 
 use Pimple\ServiceProviderInterface;
