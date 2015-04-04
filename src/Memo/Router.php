@@ -275,7 +275,6 @@ class Router
         $method = strtolower($this->action) . $this->methodExt;
 
         if (!method_exists($controllerInstance, $method)) {
-            var_dump($method);
             throw new \BadMethodCallException(
                 sprintf(
                     "Call to undefined method %s::%s",
