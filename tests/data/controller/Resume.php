@@ -1,19 +1,12 @@
 <?php
-namespace Memo {
-    interface Controller 
-    {
-        public function beforeActionHook();
-    }
-}
+namespace Memo\Controller;
 
-namespace Memo\Controller {
-    class Resume implements \Memo\Controller 
-    {
-        public function beforeActionHook(){}
+class Resume extends \Memo\Controller 
+{
+    public function beforeActionHook(){}
 
-        public function aboutGet()
-        {
-            return "Memo Controller";
-        }
+    public function aboutGet()
+    {
+        return "Memo Controller";
     }
 }

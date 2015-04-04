@@ -87,23 +87,6 @@ class App extends \Pimple\Container
         };
     }
 
-    public function stop(ResponseInterface $response)
-    {
-        throw new \Slim\Exception($response);
-    }
-
-    public function halt($status, $message = "")
-    {
-        $response = $this["response"]->withStatus($status);
-        $response->write($message);
-        $this->stop($response);
-    }
-
-    public function redirect($url, $status = 302)
-    {
-        return $this["response"]->withStatus($status)->withHeader("Location", $url);
-    }
-
     public function run()
     {
         static $responded = false;
