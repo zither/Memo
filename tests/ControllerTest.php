@@ -5,6 +5,7 @@ use Memo\Controller;
 use Slim\Http\Environment;
 use Slim\Http\Uri;
 use Slim\Http\Headers;
+use Slim\Http\Cookies;
 use Slim\Http\Body;
 use Slim\Http\Collection;
 use Slim\Http\Request;
@@ -31,7 +32,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
         $method = $env["REQUEST_METHOD"];
         $uri = Uri::createFromEnvironment($env);
         $headers = Headers::createFromEnvironment($env);
-        $cookies = new Collection(\Slim\Http\Cookies::parseHeader($headers->get("Cookie")));
+        $cookies = new Collection(Cookies::parseHeader($headers->get("Cookie")));
         $serverParams = new Collection($env->all());
         $body = new Body(fopen("php://input", "r"));
         return new Request($method, $uri, $headers, $cookies, $serverParams, $body);    
