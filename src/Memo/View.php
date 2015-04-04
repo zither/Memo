@@ -204,9 +204,8 @@ class View
      *
      * The template's layout could be nested
      *
-     * @throws \LogicExcetpion
-     *
      * @return string
+     * @throws \LogicExcetpion
      */
     public function render()
     {
@@ -238,9 +237,8 @@ class View
      *
      * @param string $template
      *
-     * @throws \InvalidArgumentException
-     *
      * @return string
+     * @throws \InvalidArgumentException
      */
     public function getPath($template)
     {
@@ -261,7 +259,7 @@ class View
     }
 
     /**
-     *  Recursive ob_end_clean
+     * Recursive ob_end_clean
      *
      * @param int $level
      */
@@ -318,9 +316,8 @@ class View
      * @param mixed $method
      * @param mixed $arguments
      *
-     * @throws \BadMethodCallException
-     *
      * @return mixed
+     * @throws \BadMethodCallException
      */
     public function __call($method, $arguments) 
     {

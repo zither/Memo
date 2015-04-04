@@ -63,8 +63,11 @@ class Router
      */
     public $params = null;
 
+
     /**
-     * Constructor
+     * Construct
+     *
+     * @param Environment $environment
      */
     public function __construct(Environment $environment)
     {
@@ -253,11 +256,13 @@ class Router
     }
 
     /**
-     * Invoke atction method
+     * Invoke action
      *
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
+     *
+     * @return mixed 
      * @throws \BadMethodCallException
-     *
-     * @return mixed
      */
     protected function invokeAction(RequestInterface $request, ResponseInterface $response)
     {
@@ -291,11 +296,13 @@ class Router
     }
 
     /**
-     * Instantiate controller
+     * Get a Controller instance
      *
-     * @throws \RuntimeException
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
      *
      * @return object
+     * @throws \RuntimeException
      */
     protected function instantiateController(RequestInterface $request, ResponseInterface $response)
     {
