@@ -11,6 +11,7 @@ namespace Memo;
 use Pimple\ServiceProviderInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Slim\Interfaces\Http\CookiesInterface;
 
 class App extends \Pimple\Container
 {
@@ -52,7 +53,17 @@ class App extends \Pimple\Container
         $this["response"] = $this->factory(function ($c) {
             $headers = new \Slim\Http\Headers(["Content-Type" => "text/html"]);
             $response = new \Slim\Http\Response(200, $headers);
-            $response->setCookieDefaults(array(
+
+            return $response->withProtocolVersion($c["settings"]["httpVersion"]);
+        });
+
+        /**
+         * This Pimple service MUST return a SHARED instance
+         * of \Slim\Interfaces\Http\CookiesInterface.
+         */
+        $this["cookies"] = function ($c) {
+            $cookies = new Http\Cookies($c["request"]->getCookieParams());
+            $cookies->setDefaults(array(
                 "expires" => $c["settings"]["cookieLifetime"],
                 "path" => $c["settings"]["cookiePath"],
                 "domain" => $c["settings"]["cookieDomain"],
@@ -60,8 +71,8 @@ class App extends \Pimple\Container
                 "httponly" => $c["settings"]["cookieHttpOnly"]
             ));
 
-            return $response->withProtocolVersion($c["settings"]["httpVersion"]);
-        });
+            return $cookies;
+        };
 
         $this["router"] = function ($c) {
             return new Router();
@@ -105,6 +116,16 @@ class App extends \Pimple\Container
             $response = $e->getResponse();
         } catch (\Exception $e) {
             $response = $this["errorHandler"]($request, $response, $e);
+        }
+
+        // Serialize cookies into Response
+        if (!$this["Cookies"] instanceof CookiesInterface) {
+            throw new \RuntimeException("Cookies service must return an instance of \\Slim\\Interfaces\\Http\\CookiesInterface");
+        }
+
+        $cookieHeaders = $this["cookies"]->toHeaders();
+        if ($cookieHeaders) {
+            $response = $response->withAddedHeader("Set-Cookie", $cookieHeaders);
         }
 
         if (in_array($response->getStatusCode(), array(204, 304))) {
