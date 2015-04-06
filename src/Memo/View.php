@@ -8,7 +8,10 @@
 */
 namespace Memo;
 
-class View 
+use Pimple\Container;
+use Pimple\ServiceProviderInterface;
+
+class View implements ServiceProviderInterface
 {
     /**
      * The current template name
@@ -88,6 +91,16 @@ class View
             $method = sprintf("set%s", ucfirst(strtolower($property)));
             call_user_func(array($this, $method), $value);
         }
+    }
+
+    /**
+     * Register this cache provider with a Pimple container
+     *
+     * @param Container $container
+     */
+    public function register(Container $container)
+    {
+        $container["view"] = $this;
     }
 
     /**

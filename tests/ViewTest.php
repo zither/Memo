@@ -26,6 +26,7 @@ class ViewTest extends PHPUnit_Framework_TestCase
             "invalid" => "undefined"
         );
         $view = new View($settings);
+        $this->assertInstanceOf("\\Pimple\\ServiceProviderInterface", $view);
         $this->assertEquals("index.template", $view->template);
         $this->assertEquals(array(__DIR__ . "/data"), $view->folders);
         $this->assertEquals("html", $view->extension);
