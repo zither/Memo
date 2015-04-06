@@ -147,14 +147,6 @@ class ViewTest extends PHPUnit_Framework_TestCase
         $this->view->render();
     }
 
-    public function testDisplay()
-    {
-        $this->expectOutputString("<html><p>hello,Joe!</p><p>hello@example.com</p></html>");
-        $this->view->setTemplate("contact.template");
-        $this->view->assign("name", "Joe");
-        $this->view->display();
-    }
-
     /**
      * @expectedException \InvalidArgumentException
      */

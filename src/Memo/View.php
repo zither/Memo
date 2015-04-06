@@ -284,14 +284,6 @@ class View implements ServiceProviderInterface
     }
 
     /**
-     * Print template
-     */
-    public function display()
-    {
-        echo $this->render();
-    }
-
-    /**
      * Set helper instance
      *
      * @param object $helper
