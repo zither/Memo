@@ -62,7 +62,7 @@ class App extends \Pimple\Container
          * of \Slim\Interfaces\Http\CookiesInterface.
          */
         $this["cookies"] = function ($c) {
-            $cookies = new Http\Cookies($c["request"]->getCookieParams());
+            $cookies = new \Slim\Http\Cookies($c["request"]->getCookieParams());
             $cookies->setDefaults(array(
                 "expires" => $c["settings"]["cookieLifetime"],
                 "path" => $c["settings"]["cookiePath"],
@@ -75,7 +75,7 @@ class App extends \Pimple\Container
         };
 
         $this["router"] = function ($c) {
-            return new Router();
+            return new Router($c);
         };
 
         $this["errorHandler"] = function ($c) {
@@ -85,6 +85,17 @@ class App extends \Pimple\Container
         $this["notFoundHandler"] = function ($c) {
             return new \Slim\Handlers\NotFound();
         };
+    }
+
+    /**
+     * Add route
+     *
+     * @param string $route
+     * @param array $callback
+     */
+    public function addRoute($route, $callback)
+    {
+        $this["router"]->addRoute($route, $callback);
     }
 
     public function run()
@@ -102,7 +113,7 @@ class App extends \Pimple\Container
         }
 
         // Serialize cookies into Response
-        if (!$this["Cookies"] instanceof CookiesInterface) {
+        if (!$this["cookies"] instanceof CookiesInterface) {
             throw new \RuntimeException("Cookies service must return an instance of \\Slim\\Interfaces\\Http\\CookiesInterface");
         }
 
