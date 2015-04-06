@@ -8,6 +8,7 @@
 */
 namespace Memo;
 
+use Pimple\Container;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -28,6 +29,13 @@ class Controller
     protected $response;
 
     /**
+     * Container
+     *
+     * @var \Pimple\Container
+     */
+    protected $container;
+
+    /**
      * Constructor
      *
      * @param RequestInterface $request
@@ -37,6 +45,16 @@ class Controller
     {
         $this->request = $request;
         $this->response = $response;
+    }
+
+    /**
+     * Set container
+     *
+     * @param Container $container
+     */
+    public function setContainer(Container $container)
+    {
+        $this->container = $container;
     }
 
     /**
@@ -79,5 +97,15 @@ class Controller
     {
         $response = $this->response->withStatus($status)->withHeader("Location", $url);
         $this->stop($response);
+    }
+
+    /**
+     * Container getter
+     *
+     * @param string $name
+     */
+    public function __get($name) 
+    {
+        return isset($this->container[$name]) ? $this->container[$name] : null; 
     }
 }
