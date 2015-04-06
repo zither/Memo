@@ -8,7 +8,7 @@
 */
 namespace Memo;
 
-use Slim\Http\Environment;
+use Pimple\Container;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -20,6 +20,13 @@ class Router
      * @var \Slim\Http\Environment
      */
     public $environment;
+
+    /**
+     * Container
+     *
+     * @var \Pimple\Container
+     */
+    public $container;
 
     /**
      * Routes
@@ -67,18 +74,19 @@ class Router
     /**
      * Construct
      *
-     * @param Environment $environment
+     * @param Container $container
      */
-    public function __construct(Environment $environment)
+    public function __construct(Container $container)
     {
-        $this->environment = $environment;
+        $this->container = $container;
+        $this->environment = $container["environment"];
     }
 
     /**
      * Add route
      *
      * @param string $route 
-     * @param mixed $callback closure or array
+     * @param array $callback an array contains controller and action name 
      */
     public function addRoute($route, $callback)
     {
@@ -312,7 +320,11 @@ class Router
         );
 
         if (class_exists($memoController)) {
-            return new $memoController($request, $response);
+            $controller = new $memoController($request, $response);
+            if ($controller instanceof $this->memoController) {
+                $controller->setContainer($this->container); 
+            }
+            return $controller;
         }
 
         if (class_exists($this->controller)) {

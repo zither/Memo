@@ -5,6 +5,8 @@ require ROOT . "/tests/data/controller/Index.php";
 require ROOT . "/tests/data/controller/Resume.php";
 
 use Memo\Router;
+use Pimple\Container;
+use Slim\Http\Environment;
 
 class RouterTest extends PHPUnit_Framework_TestCase
 {
@@ -12,7 +14,9 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->router = new Router(new \Slim\Http\Environment());
+        $container = new Container();
+        $container["environment"] = new Environment();
+        $this->router = new Router($container);
     }
 
     public function testConstruct()
