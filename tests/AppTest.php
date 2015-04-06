@@ -10,4 +10,11 @@ class AppTest extends PHPUnit_Framework_TestCase
         $app = new App();
         $this->assertInstanceof("\\Memo\\App", $app);
     }
+
+    public function testAddRoute()
+    {
+        $app = new App();
+        $app->addRoute("test", array("Test", "test"));
+        $this->assertEquals([["test" => ["Test", "test"]]], $app["router"]->routes);
+    }
 }
