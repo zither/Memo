@@ -10,6 +10,7 @@ use Slim\Http\Body;
 use Slim\Http\Collection;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use Pimple\Container;
 
 
 class ControllerTest extends PHPUnit_Framework_TestCase 
@@ -79,5 +80,30 @@ class ControllerTest extends PHPUnit_Framework_TestCase
             $this->assertEquals(302, $response->getStatusCode());
             $this->assertEquals("/index", $response->getHeader("Location"));
         }
+    }
+
+    public function testSetContainer()
+    {
+        $container = new Container();
+        $controller = new Controller($this->request, $this->response);
+        $controller->setContainer($container);
+        $this->assertAttributeEquals($container, "container", $controller);
+    }
+
+    public function testMagicGetWithValidValue()
+    {
+        $container = new Container();
+        $container["request"] = $this->request;
+        $controller = new Controller($this->request, $this->response);
+        $controller->setContainer($container);
+        $this->assertSame($this->request, $controller->request);    
+    }
+
+    public function testMagicGetWithInvalidValue()
+    {
+        $container = new Container();
+        $controller = new Controller($this->request, $this->response);
+        $controller->setContainer($container);
+        $this->assertNull($controller->environment);
     }
 }
