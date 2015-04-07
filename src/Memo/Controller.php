@@ -69,7 +69,6 @@ class Controller
         throw new \Slim\Exception($response);
     }
 
-
     /**
      * Halt
      *

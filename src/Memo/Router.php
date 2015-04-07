@@ -36,14 +36,14 @@ class Router
     public $routes = array();
 
     /**
-     * Controller
+     * Controller name
      *
      * @var string
      */
     public $controller = "index";
 
     /**
-     * Action
+     * Action name
      *
      * @var string
      */
@@ -57,11 +57,11 @@ class Router
     public $methodExt = "Get";
 
     /**
-     * Memo controller
+     * Controller namespace
      *
      * @var string
      */
-    public $memoController = "\\Memo\\Controller";
+    public $namespace = "\\Memo\\Controller";
 
     /**
      * Params
@@ -147,7 +147,7 @@ class Router
                 sprintf(
                     "Action name must be of the type string, %s given.",
                     getType($action)
-                )             
+                )
             );
         }
         $this->action = $action;
@@ -187,6 +187,7 @@ class Router
             $notFound = new \Slim\Handlers\NotFound();
             $response = $notFound($request, $response);
         }
+
         return $response;
     }
 
@@ -202,15 +203,17 @@ class Router
         if (empty($this->routes)) {
             return false;
         }
+
         foreach ($this->routes as $route) {
             preg_match(sprintf("#^%s$#", key($route)), $pathInfo, $matches);
             if (empty($matches)) {
                 continue;
             }
-            if ($this->processMatchedRoute($route, $matches)) {
+            if (false !== $this->processMatchedRoute($route, $matches)) {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -225,13 +228,13 @@ class Router
     protected function processMatchedRoute($route, $matches)
     {
         $callback = current($route);
-        if (is_array($callback) && count($callback) > 1) {
-            $this->controller = $callback[0];
-            $this->action = $callback[1];
-            $this->processParams(array_slice($matches, 1));
-            return true;
+        if (!is_array($callback) || count($callback) < 2) {
+            return false;
         }
-        return false;
+
+        $this->controller = $callback[0];
+        $this->action = $callback[1];
+        $this->params = $this->processParams(array_slice($matches, 1));
     }
 
     /**
@@ -243,9 +246,7 @@ class Router
      */
     protected function processParams($params)
     {
-        if (count($params) > 0) {
-            $this->params = array_shift($params);
-        }
+        return count($params) > 0 ? array_shift($params) : null;
     }
 
     /**
@@ -313,29 +314,24 @@ class Router
      */
     protected function instantiateController(RequestInterface $request, ResponseInterface $response)
     {
-        $memoController = sprintf(
-            "%s\\%s", 
-            $this->memoController, 
+        $controllerName = sprintf(
+            "%s\\%s",
+            $this->namespace, 
             ucfirst(strtolower($this->controller))
         );
 
-        if (class_exists($memoController)) {
-            $controller = new $memoController($request, $response);
-            if ($controller instanceof $this->memoController) {
+        if (class_exists($controllerName)) {
+            $controller = new $controllerName($request, $response);
+            if ($controller instanceof $this->namespace) {
                 $controller->setContainer($this->container); 
             }
             return $controller;
         }
 
-        if (class_exists($this->controller)) {
-            return new $this->controller($request, $response);
-        }
-
         throw new \RuntimeException(
-            sprintf("Controller dose not exist: %s", $this->controller)
+            sprintf("Controller dose not exist: %s", $controllerName)
         );
     }
-
 
     /**
      * Mock HTTP request environment

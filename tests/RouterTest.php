@@ -213,7 +213,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
     public function testDispatchWithMetchedInvalidController()
     {
         $this->router->mock(array(
-            "PATH_INFO" => "/hi/Joe", 
+            "PATH_INFO" => "/invalidController/Joe", 
             "SCRIPT_NAME" => "index.php"
         ));
         $request = $this->createRequest($this->router->environment);
