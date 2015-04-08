@@ -15,13 +15,6 @@ use Psr\Http\Message\ResponseInterface;
 class Router
 {
     /**
-     * Environment
-     *
-     * @var \Slim\Http\Environment
-     */
-    public $environment;
-
-    /**
      * Container
      *
      * @var \Pimple\Container
@@ -79,7 +72,6 @@ class Router
     public function __construct(Container $container)
     {
         $this->container = $container;
-        $this->environment = $container["environment"];
     }
 
     /**
@@ -163,10 +155,9 @@ class Router
      */
     public function dispatch(RequestInterface $request, ResponseInterface $response)
     {
-        if (!isset($this->environment["PATH_INFO"])) {
-            $this->environment["PATH_INFO"] = "/";
-        }
-        $pathInfo = $this->environment["PATH_INFO"];
+        $serverParams = $request->getServerParams();
+        $pathInfo = isset($serverParams["PATH_INFO"]) ? $serverParams["PATH_INFO"] : "/";
+
         if (!empty(trim($pathInfo, "/")) && !$this->matchRoutes($pathInfo)) {
             $this->parsePathInfo($pathInfo);
         }
@@ -331,15 +322,5 @@ class Router
         throw new \RuntimeException(
             sprintf("Controller dose not exist: %s", $controllerName)
         );
-    }
-
-    /**
-     * Mock HTTP request environment
-     *
-     * @param array $userSettings
-     */
-    public function mock($userSettings = array())
-    {
-        $this->environment = $this->environment->mock($userSettings);
     }
 }
