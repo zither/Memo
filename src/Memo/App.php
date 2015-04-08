@@ -168,19 +168,4 @@ class App extends \Pimple\Container
     {
         return $this["router"]->dispatch($request, $response);
     }
-
-    public function subRequest($method, $path, array $headers = [], array $cookies = [], $bodyContent = "") 
-    {
-        $env = $this["environment"];
-        $uri = \Slim\Http\Uri::createFromEnvironment($env)->withPath($path);
-        $headers = new \Slim\Http\Headers($headers);
-        $cookies = new \Slim\Collection($cookies);
-        $serverParams = new \Slim\Collection($env->all());
-        $body = new \Slim\Http\Body(fopen("php://temp", "r+"));
-        $body->write($bodyContent);
-        $body->rewind();
-        $request = new \Slim\Http\Request($method, $uri, $headers, $cookies, $serverParams, $body);
-        $response = $this["response"];
-        return $this($request, $response);
-    }
 }
