@@ -8,6 +8,11 @@ class Index
         return "Hello,world!";
     }
 
+    public function helloPost()
+    {
+        return "This is a POST request.";
+    }
+
     public function indexGet()
     {
         return "Default Controller And Action";

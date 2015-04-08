@@ -267,19 +267,15 @@ class Router
     protected function invokeAction(RequestInterface $request, ResponseInterface $response)
     {
         $controllerInstance = $this->instantiateController($request, $response);
-        if (isset($this->environment["REQUEST_METHOD"])) {
-            $this->methodExt = ucfirst(
-                strtolower($this->environment["REQUEST_METHOD"])
-            );            
-        }
-        $method = strtolower($this->action) . $this->methodExt;
+        $this->methodExt = ucfirst(strtolower($request->getMethod()));
+        $action = strtolower($this->action) . $this->methodExt;
 
-        if (!method_exists($controllerInstance, $method)) {
+        if (!method_exists($controllerInstance, $action)) {
             throw new \BadMethodCallException(
                 sprintf(
                     "Call to undefined method %s::%s",
                     $this->controller,
-                    $method
+                    $action
                 )
             );
         }
@@ -289,7 +285,7 @@ class Router
         }
 
         return call_user_func(
-            array($controllerInstance, $method), 
+            array($controllerInstance, $action), 
             $this->params
         );    
     }

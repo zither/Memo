@@ -87,6 +87,22 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("Hello,world!", (string)$response->getBody());
     }
 
+    public function testDispatchPostRequestWithControllerAndAction()
+    {
+        $mockEnv = (new \Slim\Http\Environment())->mock(array(
+            "PATH_INFO" => "/index/hello/", 
+            "REQUEST_METHOD" => "POST",
+            "SCRIPT_NAME" => "/index.php"                        
+        ));
+        $request = $this->createRequest($mockEnv);
+        $response = new \Slim\Http\Response();
+
+        $response = $this->router->dispatch($request, $response);
+        $this->assertInstanceof("\Psr\Http\Message\ResponseInterface", $response);
+
+        $this->assertEquals("This is a POST request.", (string)$response->getBody());
+    }
+
     public function testDispatchWithDefaultControllerAndAction()
     {
         $mockEnv = (new \Slim\Http\Environment())->mock(array(
