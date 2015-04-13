@@ -106,7 +106,7 @@ class App extends \Pimple\Container
 
         try {
             $response = $this->callMiddlewareStack($request, $response);
-        } catch (\Slim\Exception $e) {
+        } catch (\Memo\Exception $e) {
             $response = $e->getResponse();
         } catch (\Exception $e) {
             $response = $this["errorHandler"]($request, $response, $e);

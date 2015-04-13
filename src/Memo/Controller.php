@@ -62,11 +62,11 @@ class Controller
      *
      * @param ResponseInterface $response
      *
-     * @throws \Slim\Exception
+     * @throws \Memo\Exception
      */
     public function stop(ResponseInterface $response)
     {
-        throw new \Slim\Exception($response);
+        throw (new \Memo\Exception())->setResponse($response);
     }
 
     /**
@@ -75,7 +75,7 @@ class Controller
      * @param int    $status  The desired Http status
      * @param string $message The desired Http message
      *
-     * @throws \Slim\Exception
+     * @throws \Memo\Exception
      */
     public function halt($status, $message = "")
     {
@@ -90,7 +90,7 @@ class Controller
      * @param string $url
      * @param int $status
      *
-     * @throws \Slim\Exception
+     * @throws \Memo\Exception
      */
     public function redirect($url, $status = 302)
     {

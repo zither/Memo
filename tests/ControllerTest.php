@@ -48,7 +48,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Slim\Exception
+     * @expectedException \Memo\Exception
      */
     public function testStop()
     {
@@ -62,7 +62,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
             $controller = new Controller($this->request, $this->response);
             $controller->halt(404, "Controller Halt");
         } catch (\Exception $e) {
-            $this->assertInstanceOf("\\Slim\\Exception", $e);
+            $this->assertInstanceOf("\\Memo\\Exception", $e);
             $this->assertEquals(404, $e->getResponse()->getStatusCode());
             $this->assertEquals("Controller Halt", (string)$e->getResponse()->getBody());
         }
@@ -74,7 +74,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
             $controller = new Controller($this->request, $this->response);
             $response = $controller->redirect("/index");
         } catch (\Exception $e) {
-            $this->assertInstanceOf("\\Slim\\Exception", $e);
+            $this->assertInstanceOf("\\Memo\\Exception", $e);
             $response = $e->getResponse();
             $this->assertTrue($response->isRedirect());
             $this->assertEquals(302, $response->getStatusCode());
