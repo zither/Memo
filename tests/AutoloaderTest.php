@@ -11,13 +11,12 @@ class AutoloaderTest extends PHPUnit_Framework_TestCase
         Autoloader::addNamespace("Memo\\", ROOT . "/src/Memo"); 
         Autoloader::addNamespace(
             "Memo\\Tests", 
-            ROOT . "/tests/data/", 
-            Autoloader::PREPEND
+            ROOT . "/tests/data/" 
         ); 
         $this->assertEquals(
             array(
-                "Memo\\Tests" => array(ROOT . "/tests/data/"),
-                "Memo" => array(ROOT . "/src/Memo/")
+                "Memo" => array(ROOT . "/src/Memo/"),
+                "Memo\\Tests" => array(ROOT . "/tests/data/")
             ),
             Autoloader::$prefixes
         );

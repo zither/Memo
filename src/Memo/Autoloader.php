@@ -11,13 +11,6 @@ namespace Memo;
 class Autoloader
 {
     /**
-     * For shifting new namespace off the beginning of prefixes
-     *
-     * @var boolean
-     */
-    const PREPEND = true;
-
-    /**
      * Namespace prefixes
      *
      * @var array
@@ -30,20 +23,15 @@ class Autoloader
      * @param string $prefix
      * @param string $baseDir
      * @param boolean $prepend
-     *
-     * @return int
      */
-    public static function addNamespace($prefix, $baseDir, $prepend = false)
+    public static function addNamespace($prefix, $baseDir)
     {
         $prefix = trim($prefix, "\\");
         $baseDir = rtrim($baseDir, "/\\") . DIRECTORY_SEPARATOR;
         if (!isset(static::$prefixes[$prefix])) {
             static::$prefixes[$prefix] = array();
         }
-        if ($prepend) {
-            return array_unshift(static::$prefixes[$prefix], $baseDir);
-        }
-        return array_push(static::$prefixes[$prefix], $baseDir);
+        array_push(static::$prefixes[$prefix], $baseDir);
      }
 
     /**
