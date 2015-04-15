@@ -187,29 +187,29 @@ class View implements ServiceProviderInterface
         }
     }
 
+
     /**
-     * Get section's value
+     * Get section content
      *
-     * @param string $name
+     * @param string $key
+     * @param string|null $default
      *
-     * @return mixed
+     * @return string|null
      */
-    public function section($name)
+    public function section($key, $default = null)
     {
-        if (isset($this->sections[$name])) {
-            return $this->sections[$name];
-        }
+        return isset($this->sections[$key]) ? $this->sections[$key] : $default;
     }
 
     /**
      * Assgin template variable
      *
-     * @param mixed $var
+     * @param string $key
      * @param mixed $value
      */
-    public function assign($var, $value)
+    public function assign($key, $value)
     {
-        $this->shareVars[$var] = $value;
+        $this->shareVars[$key] = $value;
     }
 
     /**

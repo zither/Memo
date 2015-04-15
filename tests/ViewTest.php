@@ -101,6 +101,7 @@ class ViewTest extends PHPUnit_Framework_TestCase
     public function testSection()
     {
         $this->assertEquals(null, $this->view->section("content"));
+        $this->assertEquals("hello", $this->view->section("invalidSection", "hello"));
         $this->view->open("content");
         ?>hello<?php
         $this->view->close();
