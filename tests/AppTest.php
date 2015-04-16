@@ -8,7 +8,11 @@ class AppTest extends PHPUnit_Framework_TestCase
     public function testConstructor()
     {
         $app = new App();
-        $this->assertInstanceof("\\Memo\\App", $app);
+        $this->assertInstanceOf("\\Memo\\App", $app);
+        $this->assertInstanceOf("\\Slim\\Http\\Environment", $app["environment"]);
+        $this->assertInstanceOf("\\Slim\\Http\\Request", $app["request"]);
+        $this->assertInstanceOf("\\Slim\\Http\\Response", $app["response"]);
+        $this->assertInstanceOf("\\Memo\\Router", $app["router"]);
     }
 
     public function testAddRoute()

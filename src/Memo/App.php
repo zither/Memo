@@ -11,7 +11,6 @@ namespace Memo;
 use Pimple\ServiceProviderInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Slim\Interfaces\Http\CookiesInterface;
 
 class App extends \Pimple\Container
 {
