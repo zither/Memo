@@ -22,8 +22,8 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $method = $env["REQUEST_METHOD"];
         $uri = \Slim\Http\Uri::createFromEnvironment($env);
         $headers = \Slim\Http\Headers::createFromEnvironment($env);
-        $cookies = new \Slim\Http\Collection(\Slim\Http\Cookies::parseHeader($headers->get("Cookie")));
-        $serverParams = new \Slim\Http\Collection($env->all());
+        $cookies = \Slim\Http\Cookies::parseHeader($headers->get("Cookie", array()));
+        $serverParams = $env->all();
         $body = new \Slim\Http\Body(fopen("php://input", "r"));
         return new \Slim\Http\Request($method, $uri, $headers, $cookies, $serverParams, $body);    
     }

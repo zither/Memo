@@ -33,8 +33,8 @@ class ControllerTest extends PHPUnit_Framework_TestCase
         $method = $env["REQUEST_METHOD"];
         $uri = Uri::createFromEnvironment($env);
         $headers = Headers::createFromEnvironment($env);
-        $cookies = new Collection(Cookies::parseHeader($headers->get("Cookie")));
-        $serverParams = new Collection($env->all());
+        $cookies = Cookies::parseHeader($headers->get("Cookie", array()));
+        $serverParams = $env->all();
         $body = new Body(fopen("php://input", "r"));
         return new Request($method, $uri, $headers, $cookies, $serverParams, $body);    
     }
@@ -78,7 +78,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
             $response = $e->getResponse();
             $this->assertTrue($response->isRedirect());
             $this->assertEquals(302, $response->getStatusCode());
-            $this->assertEquals("/index", $response->getHeader("Location"));
+            $this->assertEquals("/index", $response->getHeaderLine("Location"));
         }
     }
 

@@ -15,8 +15,6 @@ use Slim\Interfaces\Http\CookiesInterface;
 
 class App extends \Pimple\Container
 {
-    use \Slim\MiddlewareAware;
-
     protected $defaultSettings = array(
         "cookieLifetime" => "20 minutes",
         "cookiePath" => "/",
@@ -43,8 +41,8 @@ class App extends \Pimple\Container
             $method = $env["REQUEST_METHOD"];
             $uri = \Slim\Http\Uri::createFromEnvironment($env);
             $headers = \Slim\Http\Headers::createFromEnvironment($env);
-            $cookies = new \Slim\Http\Collection(\Slim\Http\Cookies::parseHeader($headers->get("Cookie")));
-            $serverParams = new \Slim\Http\Collection($env->all());
+            $cookies = \Slim\Http\Cookies::parseHeader($headers->get("Cookie", array()));
+            $serverParams = $env->all();
             $body = new \Slim\Http\Body(fopen("php://input", "r"));
 
             return new \Slim\Http\Request($method, $uri, $headers, $cookies, $serverParams, $body);
@@ -57,33 +55,8 @@ class App extends \Pimple\Container
             return $response->withProtocolVersion($c["settings"]["httpVersion"]);
         });
 
-        /**
-         * This Pimple service MUST return a SHARED instance
-         * of \Slim\Interfaces\Http\CookiesInterface.
-         */
-        $this["cookies"] = function ($c) {
-            $cookies = new \Slim\Http\Cookies($c["request"]->getCookieParams());
-            $cookies->setDefaults(array(
-                "expires" => $c["settings"]["cookieLifetime"],
-                "path" => $c["settings"]["cookiePath"],
-                "domain" => $c["settings"]["cookieDomain"],
-                "secure" => $c["settings"]["cookieSecure"],
-                "httponly" => $c["settings"]["cookieHttpOnly"]
-            ));
-
-            return $cookies;
-        };
-
         $this["router"] = function ($c) {
             return new Router($c);
-        };
-
-        $this["errorHandler"] = function ($c) {
-            return new \Slim\Handlers\Error();
-        };
-
-        $this["notFoundHandler"] = function ($c) {
-            return new \Slim\Handlers\NotFound();
         };
     }
 
@@ -101,26 +74,7 @@ class App extends \Pimple\Container
     public function run()
     {
         static $responded = false;
-        $request = $this["request"];
-        $response = $this["response"];
-
-        try {
-            $response = $this->callMiddlewareStack($request, $response);
-        } catch (\Memo\Exception $e) {
-            $response = $e->getResponse();
-        } catch (\Exception $e) {
-            $response = $this["errorHandler"]($request, $response, $e);
-        }
-
-        // Serialize cookies into Response
-        if (!$this["cookies"] instanceof CookiesInterface) {
-            throw new \RuntimeException("Cookies service must return an instance of \\Slim\\Interfaces\\Http\\CookiesInterface");
-        }
-
-        $cookieHeaders = $this["cookies"]->toHeaders();
-        if ($cookieHeaders) {
-            $response = $response->withAddedHeader("Set-Cookie", $cookieHeaders);
-        }
+        $response = $this["router"]->dispatch($this["request"], $this["response"]);
 
         if (in_array($response->getStatusCode(), array(204, 304))) {
             $response = $response->withoutHeader("Content-Type")
@@ -162,10 +116,5 @@ class App extends \Pimple\Container
         }
 
         return $response;
-    }
-
-    public function __invoke(RequestInterface $request, ResponseInterface $response)
-    {
-        return $this["router"]->dispatch($request, $response);
     }
 }

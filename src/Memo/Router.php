@@ -161,20 +161,18 @@ class Router
         }
 
         try {
-            ob_start();
             $newResponse = $this->invokeAction($request, $response);
-            $content = ob_get_clean();
             if ($newResponse instanceof ResponseInterface) {
                 $response = $newResponse;
             } elseif (is_string($newResponse)) {
                 $response->write($newResponse);
-            } elseif (is_string($content)) {
-                $response->write($content);
             }
+        } catch (\Memo\Exception $e) {
+            $response = $e->getResponse();
         } catch (\Exception $e) {
-            ob_end_clean();
-            $notFound = new \Slim\Handlers\NotFound();
-            $response = $notFound($request, $response);
+            $response = $response->withStatus(404)
+                                 ->withHeader('Content-Type', 'text/html')
+                                 ->write("404 Not Found");
         }
 
         return $response;
