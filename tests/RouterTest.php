@@ -75,7 +75,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
     public function testDispatchWithControllerAndAction()
     {
         $mockEnv = (new \Slim\Http\Environment())->mock(array(
-            "PATH_INFO" => "/index/hello/", 
+            "REQUEST_URI" => "/index/hello/", 
             "SCRIPT_NAME" => "/index.php"                        
         ));
         $request = $this->createRequest($mockEnv);
@@ -90,7 +90,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
     public function testDispatchPostRequestWithControllerAndAction()
     {
         $mockEnv = (new \Slim\Http\Environment())->mock(array(
-            "PATH_INFO" => "/index/hello/", 
+            "REQUEST_URI" => "/index/hello/", 
             "REQUEST_METHOD" => "POST",
             "SCRIPT_NAME" => "/index.php"                        
         ));
@@ -118,7 +118,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
     {
         $this->router->setDefaultAction("about");
         $mockEnv = (new \Slim\Http\Environment())->mock(array(
-            "PATH_INFO" => "/index", 
+            "REQUEST_URI" => "/index", 
             "SCRIPT_NAME" => "index.php"
         ));
         $request = $this->createRequest($mockEnv);
@@ -130,7 +130,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
     public function testDispatchWithInvalidController()
     {
         $mockEnv = (new \Slim\Http\Environment())->mock(array(
-            "PATH_INFO" => "/invalid/invalid", 
+            "REQUEST_URI" => "/invalid/invalid", 
             "SCRIPT_NAME" => "index.php"
         ));
         $request = $this->createRequest($mockEnv);
@@ -142,7 +142,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
     public function testDispatchWithInvalidAction()
     {
         $mockEnv = (new \Slim\Http\Environment())->mock(array(
-            "PATH_INFO" => "/index/invalid", 
+            "REQUEST_URI" => "/index/invalid", 
             "SCRIPT_NAME" => "index.php"
         ));
         $request = $this->createRequest($mockEnv);
@@ -154,7 +154,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
     public function testDispatchWithControllerImplementsMemoController()
     {
         $mockEnv = (new \Slim\Http\Environment())->mock(array(
-            "PATH_INFO" => "/resume/about/", 
+            "REQUEST_URI" => "/resume/about/", 
             "SCRIPT_NAME" => "index.php"
         ));
         $request = $this->createRequest($mockEnv);
@@ -166,7 +166,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
     public function testDispatchWithMetchedController()
     {
         $mockEnv = (new \Slim\Http\Environment())->mock(array(
-            "PATH_INFO" => "/hi/Joe", 
+            "REQUEST_URI" => "/hi/Joe", 
             "SCRIPT_NAME" => "index.php"
         ));
         $request = $this->createRequest($mockEnv);
@@ -179,7 +179,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
     public function testDispatchWithInvalidRegularExpression()
     {
         $mockEnv = (new \Slim\Http\Environment())->mock(array(
-            "PATH_INFO" => "/test", 
+            "REQUEST_URI" => "/test", 
             "SCRIPT_NAME" => "index.php"
         ));
         $request = $this->createRequest($mockEnv);
@@ -192,7 +192,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
     public function testDispatchWithMetchedInvalidController()
     {
         $mockEnv = (new \Slim\Http\Environment())->mock(array(
-            "PATH_INFO" => "/invalidController/Joe", 
+            "REQUEST_URI" => "/invalidController/Joe", 
             "SCRIPT_NAME" => "index.php"
         ));
         $request = $this->createRequest($mockEnv);

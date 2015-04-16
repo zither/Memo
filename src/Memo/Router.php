@@ -155,9 +155,7 @@ class Router
      */
     public function dispatch(RequestInterface $request, ResponseInterface $response)
     {
-        $serverParams = $request->getServerParams();
-        $pathInfo = isset($serverParams["PATH_INFO"]) ? $serverParams["PATH_INFO"] : "/";
-
+        $pathInfo = $request->getUri()->getPath();
         if (!empty(trim($pathInfo, "/")) && !$this->matchRoutes($pathInfo)) {
             $this->parsePathInfo($pathInfo);
         }
