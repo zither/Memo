@@ -1,8 +1,8 @@
 <?php
 
 require ROOT . "/src/Memo/Router.php";
-require ROOT . "/tests/data/controller/Index.php";
-require ROOT . "/tests/data/controller/Resume.php";
+require ROOT . "/tests/data/controllers/Index.php";
+require ROOT . "/tests/data/controllers/Resume.php";
 
 use Memo\Router;
 use Pimple\Container;

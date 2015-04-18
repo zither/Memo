@@ -1,7 +1,7 @@
 <?php
-namespace Memo\Controller;
+namespace Memo\Controllers;
 
-class Resume extends \Memo\Controller 
+class Resume extends \Memo\Controller
 {
     public function beforeActionHook(){}
 

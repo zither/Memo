@@ -1,5 +1,5 @@
 <?php
-namespace Memo\Controller;
+namespace Memo\Controllers;
 
 class Index 
 {

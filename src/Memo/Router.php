@@ -54,7 +54,7 @@ class Router
      *
      * @var string
      */
-    public $namespace = "\\Memo\\Controller";
+    public $namespace = "\\Memo\\Controllers";
 
     /**
      * Params
