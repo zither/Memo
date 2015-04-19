@@ -8,7 +8,6 @@
 */
 namespace Memo;
 
-use Pimple\ServiceProviderInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -75,7 +74,9 @@ class App extends \Pimple\Container
         static $responded = false;
         $response = $this["router"]->dispatch($this["request"], $this["response"]);
 
-        if (in_array($response->getStatusCode(), array(204, 304))) {
+        $statusCode = $response->getStatusCode();
+        $hasBody = (204 !== $statusCode && 304 !== $statusCode);
+        if (!$hasBody) {
             $response = $response->withoutHeader("Content-Type")
                                  ->withoutHeader("Content-Length");
         } else {
@@ -101,7 +102,7 @@ class App extends \Pimple\Container
                 }
             }
 
-            if (!in_array($response->getStatusCode(), array(204, 304))) {
+            if ($hasBody) {
                 $body = $response->getBody();
                 if ($body->isAttached()) {
                     $body->rewind();
