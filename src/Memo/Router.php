@@ -26,7 +26,7 @@ class Router
      *
      * @var array
      */
-    public $routes = array();
+    public $routes = [];
 
     /**
      * Controller name
@@ -59,9 +59,9 @@ class Router
     /**
      * Params
      *
-     * @var mixed
+     * @var array
      */
-    public $params = null;
+    public $params = [];
 
 
     /**
@@ -221,19 +221,7 @@ class Router
 
         $this->controller = $callback[0];
         $this->action = $callback[1];
-        $this->params = $this->processParams(array_slice($matches, 1));
-    }
-
-    /**
-     * Process params
-     *
-     * @param array $params
-     *
-     * @TODO: multiple params support
-     */
-    protected function processParams($params)
-    {
-        return count($params) > 0 ? array_shift($params) : null;
+        $this->params = array_slice($matches, 1);
     }
 
     /**
@@ -248,7 +236,7 @@ class Router
         if (!empty($pathArray)) {
             $this->action = array_shift($pathArray);
         }                 
-        $this->params = empty($pathArray) ?: array_shift($pathArray);            
+        $this->params = empty($pathArray) ? [] : $pathArray;            
     }
 
     /**
@@ -280,7 +268,7 @@ class Router
             call_user_func(array($controllerInstance, "beforeActionHook"));
         }
 
-        return call_user_func(
+        return call_user_func_array(
             array($controllerInstance, $action), 
             $this->params
         );    

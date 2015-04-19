@@ -27,4 +27,9 @@ class Index
     {
         return "Hi $name";
     }
+
+    public function sayGet($one, $two, $three)
+    {
+        return $one . $two . $three;
+    }
 }
