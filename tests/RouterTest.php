@@ -30,7 +30,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     public function testConstruct()
     {
-        $this->assertInstanceof("\Pimple\Container", $this->router->container);
+        $this->assertInstanceof("\\Pimple\\Container", $this->router->container);
     }
 
     public function testAddRoute()
@@ -82,7 +82,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $response = new \Slim\Http\Response();
 
         $response = $this->router->dispatch($request, $response);
-        $this->assertInstanceof("\Psr\Http\Message\ResponseInterface", $response);
+        $this->assertInstanceof("\\Psr\\Http\\Message\\ResponseInterface", $response);
 
         $this->assertEquals("Hello,world!", (string)$response->getBody());
     }
@@ -112,7 +112,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $response = new \Slim\Http\Response();
 
         $response = $this->router->dispatch($request, $response);
-        $this->assertInstanceof("\Psr\Http\Message\ResponseInterface", $response);
+        $this->assertInstanceof("\\Psr\\Http\\Message\\ResponseInterface", $response);
 
         $this->assertEquals("This is a POST request.", (string)$response->getBody());
     }

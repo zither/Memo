@@ -25,7 +25,7 @@ class View implements ServiceProviderInterface
      *
      * @var array
      */
-    protected $folders = array();
+    protected $folders = [];
 
     /**
      * Helper instance
@@ -46,14 +46,14 @@ class View implements ServiceProviderInterface
      *
      * @var array
      */
-    protected $shareVars = array();
+    protected $shareVars = [];
 
     /**
      * section container
      *
      * @var array
      */
-    protected $sections = array();
+    protected $sections = [];
 
     /**
      * section status stack
@@ -76,12 +76,12 @@ class View implements ServiceProviderInterface
      *
      * @param array $userSettings
      */
-    public function __construct(Array $userSettings = array())
+    public function __construct(Array $userSettings = [])
     {
         $this->layoutQueue = new \SplQueue();
         $this->sectionStack = new \SplStack();
 
-        $validProperties = array("template", "folders", "extension", "helper");
+        $validProperties = ["template", "folders", "extension", "helper"];
         $userSettings = array_intersect_key(
             $userSettings, 
             array_flip($validProperties)
@@ -331,6 +331,6 @@ class View implements ServiceProviderInterface
                 sprintf("Call to undefined method %s::%s!", __CLASS__, $method)
             );        
         }
-        return call_user_func_array(array($this->helper, $method), $arguments);
+        return call_user_func_array([$this->helper, $method], $arguments);
     }
 }

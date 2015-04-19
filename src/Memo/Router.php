@@ -82,7 +82,7 @@ class Router
      */
     public function addRoute($route, $callback)
     {
-        array_push($this->routes, array($route => $callback));
+        array_push($this->routes, [$route => $callback]);
     }
 
     /**
@@ -265,11 +265,11 @@ class Router
         }
 
         if (method_exists($controllerInstance, "beforeActionHook")) {
-            call_user_func(array($controllerInstance, "beforeActionHook"));
+            call_user_func([$controllerInstance, "beforeActionHook"]);
         }
 
         return call_user_func_array(
-            array($controllerInstance, $action), 
+            [$controllerInstance, $action], 
             $this->params
         );    
     }

@@ -15,7 +15,7 @@ class Autoloader
      *
      * @var array
      */
-    public static $prefixes = array();
+    public static $prefixes = [];
 
     /**
      * Add namespace prefix
@@ -29,7 +29,7 @@ class Autoloader
         $prefix = trim($prefix, "\\");
         $baseDir = rtrim($baseDir, "/\\") . DIRECTORY_SEPARATOR;
         if (!isset(static::$prefixes[$prefix])) {
-            static::$prefixes[$prefix] = array();
+            static::$prefixes[$prefix] = [];
         }
         array_push(static::$prefixes[$prefix], $baseDir);
      }
@@ -72,6 +72,6 @@ class Autoloader
      */
     public static function register()
     {
-        spl_autoload_register(array(__CLASS__, 'autoload'));
+        spl_autoload_register([__CLASS__, 'autoload']);
     }
 }

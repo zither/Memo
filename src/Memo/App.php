@@ -13,14 +13,14 @@ use Psr\Http\Message\ResponseInterface;
 
 class App extends \Pimple\Container
 {
-    protected $defaultSettings = array(
+    protected $defaultSettings = [
         "cookieLifetime" => "20 minutes",
         "cookiePath" => "/",
         "cookieDomain" => null,
         "cookieSecure" => false,
         "cookieHttpOnly" => false,
         "httpVersion" => "1.1"
-    );
+    ];
 
     public function __construct(array $userSettings = [])
     {
@@ -30,7 +30,7 @@ class App extends \Pimple\Container
             return array_merge($c->defaultSettings, $userSettings);
         };
 
-        $this["environment"] = function ($c) {
+        $this["environment"] = function () {
             return new \Slim\Http\Environment($_SERVER);
         };
 
@@ -39,7 +39,7 @@ class App extends \Pimple\Container
             $method = $env["REQUEST_METHOD"];
             $uri = \Slim\Http\Uri::createFromEnvironment($env);
             $headers = \Slim\Http\Headers::createFromEnvironment($env);
-            $cookies = \Slim\Http\Cookies::parseHeader($headers->get("Cookie", array()));
+            $cookies = \Slim\Http\Cookies::parseHeader($headers->get("Cookie", []));
             $serverParams = $env->all();
             $body = new \Slim\Http\Body(fopen("php://input", "r"));
 
