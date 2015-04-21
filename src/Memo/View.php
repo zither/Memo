@@ -35,13 +35,6 @@ class View implements ServiceProviderInterface
     protected $helper = null;
 
     /**
-     * Template extension
-     *
-     * @var string
-     */
-    protected $extension = "php";
-
-    /**
      * shareVars
      *
      * @var array
@@ -81,7 +74,7 @@ class View implements ServiceProviderInterface
         $this->layoutQueue = new \SplQueue();
         $this->sectionStack = new \SplStack();
 
-        $validProperties = ["template", "folders", "extension", "helper"];
+        $validProperties = ["template", "folders", "helper"];
         $userSettings = array_intersect_key(
             $userSettings, 
             array_flip($validProperties)
@@ -89,7 +82,7 @@ class View implements ServiceProviderInterface
        
         foreach ($userSettings as $property => $value) {
             $method = sprintf("set%s", ucfirst(strtolower($property)));
-            call_user_func(array($this, $method), $value);
+            call_user_func([$this, $method], $value);
         }
     }
 
@@ -131,16 +124,6 @@ class View implements ServiceProviderInterface
     public function addFolder($folder)
     {
         array_push($this->folders, rtrim($folder, "/"));
-    }
-
-    /**
-     * Set template extension
-     *
-     * @param string $extension
-     */
-    public function setExtension($extension)
-    {
-        $this->extension = ltrim($extension, ".");
     }
 
     /**
@@ -257,17 +240,16 @@ class View implements ServiceProviderInterface
     {
         foreach ($this->folders as $folder) {
             $templatePath = sprintf(
-                "%s/%s.%s", 
+                "%s/%s.php", 
                 rtrim($folder, "/\\"), 
-                $template, 
-                $this->extension
+                $template 
             );
             if (file_exists($templatePath)) {
                 return $templatePath;
             }
         }
         throw new \InvalidArgumentException(
-            sprintf("Invalid template: %s.%s!", $template, $this->extension)
+            sprintf("Invalid template: %s.php", $template)
         );
     }
 

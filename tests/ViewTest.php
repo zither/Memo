@@ -21,7 +21,6 @@ class ViewTest extends PHPUnit_Framework_TestCase
         $settings = array(
             "template" => "index.template",
             "folders" => array(__DIR__ . "/data"),
-            "extension" => "html",
             "helper" => $helper,
             "invalid" => "undefined"
         );
@@ -29,7 +28,6 @@ class ViewTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf("\\Pimple\\ServiceProviderInterface", $view);
         $this->assertEquals("index.template", $view->template);
         $this->assertEquals(array(__DIR__ . "/data"), $view->folders);
-        $this->assertEquals("html", $view->extension);
         $this->assertEquals($helper, $view->helper);
         $this->assertFalse($view->invalid);
     }
@@ -51,14 +49,6 @@ class ViewTest extends PHPUnit_Framework_TestCase
         $newFolder = "./template/";
         $this->view->addFolder($newFolder);
         $this->assertEquals(array(__DIR__ . "/data", "./template"), $this->view->folders);
-    }
-
-    public function testSetExtension()
-    {
-        $this->view->setExtension("html");
-        $this->assertEquals("html", $this->view->extension);
-        $this->view->setExtension(".php");
-        $this->assertEquals("php", $this->view->extension);
     }
 
     public function testLayout()
