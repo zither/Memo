@@ -54,7 +54,7 @@ class App extends \Pimple\Container
         });
 
         $this["router"] = function ($c) {
-            return new Router($c);
+            return (new Router())->setContainer($c);
         };
     }
 

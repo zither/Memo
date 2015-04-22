@@ -14,7 +14,8 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->router = new Router(new Container());
+        $container = new Container();
+        $this->router = (new Router())->setContainer($container);
     }
 
     protected function createRequest($env) 
@@ -26,11 +27,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $serverParams = $env->all();
         $body = new \Slim\Http\Body(fopen("php://input", "r"));
         return new \Slim\Http\Request($method, $uri, $headers, $cookies, $serverParams, $body);    
-    }
-
-    public function testConstruct()
-    {
-        $this->assertInstanceof("\\Pimple\\Container", $this->router->container);
     }
 
     public function testAddRoute()

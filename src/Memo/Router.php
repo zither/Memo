@@ -8,18 +8,12 @@
 */
 namespace Memo;
 
-use Pimple\Container;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class Router
 {
-    /**
-     * Container
-     *
-     * @var \Pimple\Container
-     */
-    public $container;
+    use ContainerAware;
 
     /**
      * Routes
@@ -62,17 +56,6 @@ class Router
      * @var array
      */
     public $params = [];
-
-
-    /**
-     * Construct
-     *
-     * @param Container $container
-     */
-    public function __construct(Container $container)
-    {
-        $this->container = $container;
-    }
 
     /**
      * Add route
