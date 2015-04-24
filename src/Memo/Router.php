@@ -274,16 +274,17 @@ class Router
             ucfirst(strtolower($this->controller))
         );
 
-        if (class_exists($controllerName)) {
-            $controller = new $controllerName($request, $response);
-            if ($controller instanceof $this->namespace) {
-                $controller->setContainer($this->container); 
-            }
-            return $controller;
+        if (!class_exists($controllerName)) {
+            throw new \RuntimeException(
+                sprintf("Controller does not exist: %s", $controllerName)
+            );
         }
 
-        throw new \RuntimeException(
-            sprintf("Controller dose not exist: %s", $controllerName)
-        );
+        $controller = new $controllerName($request, $response);
+        if ($controller instanceof $this->namespace) {
+            $controller->setContainer($this->container); 
+        }
+
+        return $controller;
     }
 }
