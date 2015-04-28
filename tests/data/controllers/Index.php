@@ -1,11 +1,16 @@
 <?php
 namespace Memo\Controllers;
 
-class Index 
+class Index extends \Memo\Controller 
 {
+    public function beforeActionHook()
+    {
+        $this->container["foo"] = "BAR";
+    }
+
     public function helloGet()
     {
-        return "Hello,world!";
+        return $this->response->write("Hello,world!");
     }
 
     public function helloPost()
@@ -15,7 +20,7 @@ class Index
 
     public function indexGet()
     {
-        return "Default Controller And Action";
+        return $this->response->write("Default Controller And Action");
     }
 
     public function aboutGet()
@@ -25,11 +30,11 @@ class Index
 
     public function hiGet($name)
     {
-        return "Hi $name";
+        return $this->response->write("Hi $name");
     }
 
-    public function sayGet($one, $two, $three)
+    public function fooGet()
     {
-        return $one . $two . $three;
+        return $this->response->write($this->container["foo"]);
     }
 }

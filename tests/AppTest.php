@@ -1,6 +1,5 @@
 <?php
 require ROOT . "/tests/data/controllers/Index.php";
-require ROOT . "/tests/data/controllers/Foo.php";
 
 use Memo\App;
 
@@ -19,7 +18,7 @@ class AppTest extends PHPUnit_Framework_TestCase
     public function testAddRoute()
     {
         $app = new App();
-        $app->addRoute("test", array("Test", "test"));
+        $app->addRoute("test", ["Test", "test"]);
         $this->assertEquals([["test" => ["Test", "test"]]], $app["router"]->routes);
     }
 
@@ -28,9 +27,9 @@ class AppTest extends PHPUnit_Framework_TestCase
         $this->expectOutputString("Default Controller And Action");
         $app = new App();
         $app["environment"] = function () {
-            return (new \Slim\Http\Environment())->mock(array(
+            return (new \Slim\Http\Environment())->mock([
                 "SCRIPT_NAME" => "/index.php"                        
-            )); 
+            ]); 
         }; 
         $app->run();
     }
@@ -40,10 +39,10 @@ class AppTest extends PHPUnit_Framework_TestCase
         $this->expectOutputString("Hi Joe");
         $app = new App();
         $app["environment"] = function () {
-            return (new \Slim\Http\Environment())->mock(array(
+            return (new \Slim\Http\Environment())->mock([
                 "REQUEST_URI" => "/index/hi/Joe", 
                 "SCRIPT_NAME" => "/index.php"                        
-            )); 
+            ]); 
         }; 
         $app->run();
     }
@@ -53,10 +52,10 @@ class AppTest extends PHPUnit_Framework_TestCase
         $this->expectOutputString("Controller does not exist: \Memo\Controllers\Invalid");
         $app = new App();
         $app["environment"] = function () {
-            return (new \Slim\Http\Environment())->mock(array(
+            return (new \Slim\Http\Environment())->mock([
                 "REQUEST_URI" => "/invalid", 
                 "SCRIPT_NAME" => "/index.php"                        
-            )); 
+            ]); 
         }; 
         $response = $app->run();
         $this->assertEquals(404, $response->getStatusCode());
@@ -67,26 +66,42 @@ class AppTest extends PHPUnit_Framework_TestCase
         $this->expectOutputString("Call to undefined method \Memo\Controllers\Index::invalidGet");
         $app = new App();
         $app["environment"] = function () {
-            return (new \Slim\Http\Environment())->mock(array(
+            return (new \Slim\Http\Environment())->mock([
                 "REQUEST_URI" => "/index/invalid", 
                 "SCRIPT_NAME" => "/index.php"                        
-            )); 
+            ]); 
         }; 
         $response = $app->run();
         $this->assertEquals(404, $response->getStatusCode());
     }
 
-    public function testRunWithSubclassOfMemoController()
+    public function testRunWithBeforeActionHook()
     {
         $this->expectOutputString("BAR");
         $app = new App();
         $app["environment"] = function () {
-            return (new \Slim\Http\Environment())->mock(array(
+            return (new \Slim\Http\Environment())->mock([
                 "REQUEST_URI" => "/Foo", 
                 "SCRIPT_NAME" => "/index.php"                        
-            )); 
+            ]); 
         }; 
         $app["foo"] = "FOO";
+        $app->addRoute("/Foo", ["Index", "foo"]);
         $app->run();
+    }
+
+    public function testRunWithoutDebug()
+    {
+        $this->expectOutputString("Not Found");
+        $app = new App(["debug" => false]);
+        $app["environment"] = function () {
+            return (new \Slim\Http\Environment())->mock([
+                "REQUEST_URI" => "/index/invalid", 
+                "SCRIPT_NAME" => "/index.php"                        
+            ]); 
+        }; 
+        $response = $app->run();
+        $this->assertEquals(404, $response->getStatusCode());
+    
     }
 }

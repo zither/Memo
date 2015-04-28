@@ -19,7 +19,8 @@ class App extends \Pimple\Container
         "cookieDomain" => null,
         "cookieSecure" => false,
         "cookieHttpOnly" => false,
-        "httpVersion" => "1.1"
+        "httpVersion" => "1.1",
+        "debug" => true
     ];
 
     public function __construct(array $userSettings = [])
@@ -69,61 +70,38 @@ class App extends \Pimple\Container
         $this["router"]->addRoute($route, $callback);
     }
 
+    /**
+     * Run app
+     *
+     * @throws \RuntimeException if controller dose not return an instance of ResponseInterface
+     *
+     * @return ResponseInterface
+     */
     public function run()
     {
         try {
             $routeInfo = $this["router"]->dispatch($this["request"]);
             $callable = $this->resolveCallable($routeInfo);
             $response = call_user_func_array($callable, $routeInfo["params"]);
-            if (is_string($response)) {
-                $response = $this["response"]->write($response);
+            if (!$response instanceof ResponseInterface) {
+                throw new \RuntimeException(
+                    "Controller must return instance of \Psr\Http\Message\ResponseInterface"
+                );
             }
         } catch (\Memo\Exception $e) {
             $response = $e->getResponse();
         } catch (\Exception $e) {
+            if (false === $this["settings"]["debug"]) {
+                $content = "Not Found";
+            } else {
+                $content = $e->getMessage();
+            }
             $response = $this["response"]->withStatus(404)
                                          ->withHeader('Content-Type', 'text/html')
-                                         ->write($e->getMessage());
+                                         ->write($content);
         }
 
-        $statusCode = $response->getStatusCode();
-        $hasBody = (204 !== $statusCode && 304 !== $statusCode);
-        if (!$hasBody) {
-            $response = $response->withoutHeader("Content-Type")
-                                 ->withoutHeader("Content-Length");
-        } else {
-            $size = $response->getBody()->getSize();
-            if (null !== $size) {
-                $response = $response->withHeader("Content-Length", $size);
-            }
-        }
-
-        if (!headers_sent()) {
-            header(sprintf(
-                "HTTP/%s %s %s",
-                $response->getProtocolVersion(),
-                $response->getStatusCode(),
-                $response->getReasonPhrase()
-            ));
-
-            foreach ($response->getHeaders() as $name => $values) {
-                foreach ($values as $value) {
-                    header(sprintf("%s: %s", $name, $value), false);
-                }
-            }
-        }
-
-        if ($hasBody) {
-            $body = $response->getBody();
-            if ($body->isAttached()) {
-                $body->rewind();
-                while (!$body->eof()) {
-                    echo $body->read(1024);
-                }
-            }
-        }
-
-        return $response;
+        return $this->sendResponse($response);
     }
 
     /**
@@ -169,5 +147,54 @@ class App extends \Pimple\Container
         }
 
         return [$controller, $routeInfo["action"]];
+    }
+
+    /**
+     * Send response
+     *
+     * @param ResponseInterface $response
+     *
+     * @return ResponseInterface
+     */
+    protected function sendResponse(ResponseInterface $response)
+    {
+        $statusCode = $response->getStatusCode();
+        $hasBody = (204 !== $statusCode && 304 !== $statusCode);
+        if (!$hasBody) {
+            $response = $response->withoutHeader("Content-Type")
+                                 ->withoutHeader("Content-Length");
+        } else {
+            $size = $response->getBody()->getSize();
+            if (null !== $size) {
+                $response = $response->withHeader("Content-Length", $size);
+            }
+        }
+
+        if (!headers_sent()) {
+            header(sprintf(
+                "HTTP/%s %s %s",
+                $response->getProtocolVersion(),
+                $response->getStatusCode(),
+                $response->getReasonPhrase()
+            ));
+
+            foreach ($response->getHeaders() as $name => $values) {
+                foreach ($values as $value) {
+                    header(sprintf("%s: %s", $name, $value), false);
+                }
+            }
+        }
+
+        if ($hasBody) {
+            $body = $response->getBody();
+            if ($body->isAttached()) {
+                $body->rewind();
+                while (!$body->eof()) {
+                    echo $body->read(1024);
+                }
+            }
+        }    
+        
+        return $response;
     }
 }
