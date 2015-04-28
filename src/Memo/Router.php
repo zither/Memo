@@ -9,7 +9,6 @@
 namespace Memo;
 
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 
 class Router
 {
@@ -42,13 +41,6 @@ class Router
      * @var string
      */
     public $methodExt = "Get";
-
-    /**
-     * Controller namespace
-     *
-     * @var string
-     */
-    public $namespace = "\\Memo\\Controllers";
 
     /**
      * Params
@@ -129,36 +121,24 @@ class Router
     }
 
     /**
-     * Dispatch
+     * Dispatch request
      *
      * @param RequestInterface $request
-     * @param ResponseInterface $response
      *
-     * @return Psr\Http\Message\ResponseInterface
+     * @return array 
      */
-    public function dispatch(RequestInterface $request, ResponseInterface $response)
+    public function dispatch(RequestInterface $request)
     {
         $pathInfo = $request->getUri()->getPath();
         if (!empty(trim($pathInfo, "/")) && !$this->matchRoutes($pathInfo)) {
             $this->parsePathInfo($pathInfo);
         }
 
-        try {
-            $newResponse = $this->invokeAction($request, $response);
-            if ($newResponse instanceof ResponseInterface) {
-                $response = $newResponse;
-            } elseif (is_string($newResponse)) {
-                $response->write($newResponse);
-            }
-        } catch (\Memo\Exception $e) {
-            $response = $e->getResponse();
-        } catch (\Exception $e) {
-            $response = $response->withStatus(404)
-                                 ->withHeader('Content-Type', 'text/html')
-                                 ->write("404 Not Found");
-        }
+        $controller = ucfirst(strtolower($this->controller));
+        $this->methodExt = ucfirst(strtolower($request->getMethod()));
+        $action = strtolower($this->action) . $this->methodExt;
 
-        return $response;
+        return ["controller" => $controller, "action" => $action, "params" => $this->params];
     }
 
     /**
@@ -220,71 +200,5 @@ class Router
             $this->action = array_shift($pathArray);
         }                 
         $this->params = empty($pathArray) ? [] : $pathArray;            
-    }
-
-    /**
-     * Invoke action
-     *
-     * @param RequestInterface $request
-     * @param ResponseInterface $response
-     *
-     * @return mixed 
-     * @throws \BadMethodCallException
-     */
-    protected function invokeAction(RequestInterface $request, ResponseInterface $response)
-    {
-        $controllerInstance = $this->instantiateController($request, $response);
-        $this->methodExt = ucfirst(strtolower($request->getMethod()));
-        $action = strtolower($this->action) . $this->methodExt;
-
-        if (!method_exists($controllerInstance, $action)) {
-            throw new \BadMethodCallException(
-                sprintf(
-                    "Call to undefined method %s::%s",
-                    $this->controller,
-                    $action
-                )
-            );
-        }
-
-        if (method_exists($controllerInstance, "beforeActionHook")) {
-            call_user_func([$controllerInstance, "beforeActionHook"]);
-        }
-
-        return call_user_func_array(
-            [$controllerInstance, $action], 
-            $this->params
-        );    
-    }
-
-    /**
-     * Get a Controller instance
-     *
-     * @param RequestInterface $request
-     * @param ResponseInterface $response
-     *
-     * @return object
-     * @throws \RuntimeException
-     */
-    protected function instantiateController(RequestInterface $request, ResponseInterface $response)
-    {
-        $controllerName = sprintf(
-            "%s\\%s",
-            $this->namespace, 
-            ucfirst(strtolower($this->controller))
-        );
-
-        if (!class_exists($controllerName)) {
-            throw new \RuntimeException(
-                sprintf("Controller does not exist: %s", $controllerName)
-            );
-        }
-
-        $controller = new $controllerName($request, $response);
-        if ($controller instanceof $this->namespace) {
-            $controller->setContainer($this->container); 
-        }
-
-        return $controller;
     }
 }

@@ -1,5 +1,4 @@
 <?php
-require ROOT . "/src/Memo/Controller.php";
 
 use Memo\Controller;
 use Slim\Http\Environment;

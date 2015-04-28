@@ -1,7 +1,5 @@
 <?php
 
-require ROOT . "/src/Memo/Autoloader.php";
-
 use \Memo\Autoloader;
 
 class AutoloaderTest extends PHPUnit_Framework_TestCase 

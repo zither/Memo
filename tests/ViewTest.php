@@ -1,5 +1,4 @@
 <?php
-require ROOT . "/src/Memo/View.php";
 
 use \Memo\View;
 

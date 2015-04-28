@@ -71,8 +71,20 @@ class App extends \Pimple\Container
 
     public function run()
     {
-        static $responded = false;
-        $response = $this["router"]->dispatch($this["request"], $this["response"]);
+        try {
+            $routeInfo = $this["router"]->dispatch($this["request"]);
+            $callable = $this->resolveCallable($routeInfo);
+            $response = call_user_func_array($callable, $routeInfo["params"]);
+            if (is_string($response)) {
+                $response = $this["response"]->write($response);
+            }
+        } catch (\Memo\Exception $e) {
+            $response = $e->getResponse();
+        } catch (\Exception $e) {
+            $response = $this["response"]->withStatus(404)
+                                         ->withHeader('Content-Type', 'text/html')
+                                         ->write($e->getMessage());
+        }
 
         $statusCode = $response->getStatusCode();
         $hasBody = (204 !== $statusCode && 304 !== $statusCode);
@@ -86,35 +98,76 @@ class App extends \Pimple\Container
             }
         }
 
-        if (!$responded) {
-            if (!headers_sent()) {
-                header(sprintf(
-                    "HTTP/%s %s %s",
-                    $response->getProtocolVersion(),
-                    $response->getStatusCode(),
-                    $response->getReasonPhrase()
-                ));
+        if (!headers_sent()) {
+            header(sprintf(
+                "HTTP/%s %s %s",
+                $response->getProtocolVersion(),
+                $response->getStatusCode(),
+                $response->getReasonPhrase()
+            ));
 
-                foreach ($response->getHeaders() as $name => $values) {
-                    foreach ($values as $value) {
-                        header(sprintf("%s: %s", $name, $value), false);
-                    }
+            foreach ($response->getHeaders() as $name => $values) {
+                foreach ($values as $value) {
+                    header(sprintf("%s: %s", $name, $value), false);
                 }
             }
+        }
 
-            if ($hasBody) {
-                $body = $response->getBody();
-                if ($body->isAttached()) {
-                    $body->rewind();
-                    while (!$body->eof()) {
-                        echo $body->read(1024);
-                    }
+        if ($hasBody) {
+            $body = $response->getBody();
+            if ($body->isAttached()) {
+                $body->rewind();
+                while (!$body->eof()) {
+                    echo $body->read(1024);
                 }
             }
-
-            $responded = true;
         }
 
         return $response;
+    }
+
+    /**
+     * Resolve callable
+     *
+     * @param array $routeInfo
+     *
+     * @throws \RuntimeException if controller does not exist
+     * @throws \BadMethodCallException if action is undefined
+     *
+     * @return array
+     */
+    protected function resolveCallable(array $routeInfo)
+    {
+        $controllerName = sprintf(
+            "%s\\%s",
+            "\\Memo\\Controllers", 
+            $routeInfo["controller"]
+        );
+
+        if (!class_exists($controllerName)) {
+            throw new \RuntimeException(
+                sprintf("Controller does not exist: %s", $controllerName)
+            );
+        }
+
+        $controller = new $controllerName($this["request"], $this["response"]);
+        if ($controller instanceof \Memo\Controller) {
+            $controller->setContainer($this); 
+        } 
+        if (method_exists($controller, "beforeActionHook")) {
+            $controller->beforeActionHook();
+        }
+
+        if (!method_exists($controller, $routeInfo["action"])) {
+            throw new \BadMethodCallException(
+                sprintf(
+                    "Call to undefined method %s::%s",
+                    $controllerName,
+                    $routeInfo["action"]
+                )
+            );
+        }
+
+        return [$controller, $routeInfo["action"]];
     }
 }

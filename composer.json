@@ -14,5 +14,10 @@
     "require-dev": {
         "mockery/mockery": "dev-master@dev",
         "phpunit/phpunit": "*"
+    },
+    "autoload": {
+        "psr-0": {
+            "Memo": "src"
+        }
     }
 }

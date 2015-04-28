@@ -1,7 +1,5 @@
 <?php
 
-require ROOT . "/src/Memo/ContainerAware.php";
-
 use Pimple\Container;
 
 class Bag
