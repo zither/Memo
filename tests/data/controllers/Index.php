@@ -15,7 +15,7 @@ class Index extends \Memo\Controller
 
     public function helloPost()
     {
-        return "This is a POST request.";
+        return $this->response->write("POST");
     }
 
     public function indexGet()
@@ -25,7 +25,12 @@ class Index extends \Memo\Controller
 
     public function aboutGet()
     {
-        return "No Action"; 
+        return "string";
+    }
+
+    public function redirectGet()
+    {
+        $this->redirect("/index");
     }
 
     public function hiGet($name)

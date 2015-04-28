@@ -73,8 +73,6 @@ class App extends \Pimple\Container
     /**
      * Run app
      *
-     * @throws \RuntimeException if controller dose not return an instance of ResponseInterface
-     *
      * @return ResponseInterface
      */
     public function run()

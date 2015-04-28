@@ -102,6 +102,48 @@ class AppTest extends PHPUnit_Framework_TestCase
         }; 
         $response = $app->run();
         $this->assertEquals(404, $response->getStatusCode());
-    
+    }
+
+    public function testRunWithInvalidResponse()
+    {
+        $this->expectOutputString("Controller must return instance of \Psr\Http\Message\ResponseInterface");
+        $app = new App();
+        $app["environment"] = function () {
+            return (new \Slim\Http\Environment())->mock([
+                "REQUEST_URI" => "/index/about", 
+                "SCRIPT_NAME" => "/index.php"                        
+            ]); 
+        }; 
+        $response = $app->run();
+        $this->assertEquals(404, $response->getStatusCode());    
+    }
+
+    public function testRunWithPostRequest()
+    {
+        $this->expectOutputString("POST");
+        $app = new App();
+        $app["environment"] = function () {
+            return (new \Slim\Http\Environment())->mock([
+                "REQUEST_URI" => "/index/hello", 
+                "REQUEST_METHOD" => "POST",
+                "SCRIPT_NAME" => "/index.php"                        
+            ]); 
+        }; 
+        $app->run();
+    }
+
+    public function testRunWithMemoException()
+    {
+        $app = new App();
+        $app["environment"] = function () {
+            return (new \Slim\Http\Environment())->mock([
+                "REQUEST_URI" => "/index/redirect", 
+                "SCRIPT_NAME" => "/index.php"                        
+            ]); 
+        }; 
+        $response = $app->run();  
+        $this->assertEquals(302, $response->getStatusCode());
+        $this->assertArrayHasKey("Location", $response->getHeaders());
+        $this->assertEquals("/index", $response->getHeaderLine("Location"));
     }
 }
