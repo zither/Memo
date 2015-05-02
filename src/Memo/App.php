@@ -116,7 +116,7 @@ class App extends \Pimple\Container
     {
         $controllerName = sprintf(
             "%s\\%s",
-            "\\Memo\\Controllers", 
+            "\\App\\Controllers", 
             $routeInfo["controller"]
         );
 

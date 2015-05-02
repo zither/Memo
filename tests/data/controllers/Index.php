@@ -1,5 +1,5 @@
 <?php
-namespace Memo\Controllers;
+namespace App\Controllers;
 
 class Index extends \Memo\Controller 
 {

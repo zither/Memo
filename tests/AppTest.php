@@ -49,7 +49,7 @@ class AppTest extends PHPUnit_Framework_TestCase
 
     public function testRunWithInvalidController()
     {
-        $this->expectOutputString("Controller does not exist: \Memo\Controllers\Invalid");
+        $this->expectOutputString("Controller does not exist: \App\Controllers\Invalid");
         $app = new App();
         $app["environment"] = function () {
             return (new \Slim\Http\Environment())->mock([
@@ -63,7 +63,7 @@ class AppTest extends PHPUnit_Framework_TestCase
 
     public function testRunWithInvalidAction()
     {
-        $this->expectOutputString("Call to undefined method \Memo\Controllers\Index::invalidGet");
+        $this->expectOutputString("Call to undefined method \App\Controllers\Index::invalidGet");
         $app = new App();
         $app["environment"] = function () {
             return (new \Slim\Http\Environment())->mock([
