@@ -1,6 +1,7 @@
 <?php
+use \Memo\Services\View;
 
-use \Memo\View;
+define("DATA_DIR", dirname(__DIR__) . "/data");
 
 class ViewTest extends PHPUnit_Framework_TestCase
 {
@@ -9,7 +10,7 @@ class ViewTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->view = new View();
-        $this->view->addFolder(__DIR__ . "/data");
+        $this->view->addFolder(DATA_DIR);
     }
 
     public function testConstruct()
@@ -17,16 +18,16 @@ class ViewTest extends PHPUnit_Framework_TestCase
         $helper = function () {
             return 1;
         };
-        $settings = array(
+        $settings = [
             "template" => "index.template",
-            "folders" => array(__DIR__ . "/data"),
+            "folders" => [DATA_DIR],
             "helper" => $helper,
             "invalid" => "undefined"
-        );
+        ];
         $view = new View($settings);
         $this->assertInstanceOf("\\Pimple\\ServiceProviderInterface", $view);
         $this->assertEquals("index.template", $view->template);
-        $this->assertEquals(array(__DIR__ . "/data"), $view->folders);
+        $this->assertEquals([DATA_DIR], $view->folders);
         $this->assertEquals($helper, $view->helper);
         $this->assertFalse($view->invalid);
     }
@@ -39,15 +40,15 @@ class ViewTest extends PHPUnit_Framework_TestCase
 
     public function testSetFolders()
     {
-        $this->view->setFolders(array("./test"));
-        $this->assertEquals(array("./test"), $this->view->folders);
+        $this->view->setFolders(["./test"]);
+        $this->assertEquals(["./test"], $this->view->folders);
     }
 
     public function testAddFolder()
     {
         $newFolder = "./template/";
         $this->view->addFolder($newFolder);
-        $this->assertEquals(array(__DIR__ . "/data", "./template"), $this->view->folders);
+        $this->assertEquals([DATA_DIR, "./template"], $this->view->folders);
     }
 
     public function testLayout()
@@ -108,7 +109,7 @@ class ViewTest extends PHPUnit_Framework_TestCase
      */
     public function testGetPath()
     {
-        $this->assertEquals(__DIR__ . "/data/index.template.php", $this->view->getPath("index.template"));
+        $this->assertEquals(DATA_DIR . "/index.template.php", $this->view->getPath("index.template"));
         $this->view->getPath("undefine");
     }
 
@@ -163,7 +164,7 @@ class ViewTest extends PHPUnit_Framework_TestCase
 
     public function testPropertyGetter()
     {
-        $this->assertEquals(array(__DIR__ . "/data"), $this->view->folders);
+        $this->assertEquals([DATA_DIR], $this->view->folders);
         $this->assertFalse($this->view->undefine);
     }
 } 

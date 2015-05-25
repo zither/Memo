@@ -6,7 +6,7 @@
 * @copyright Copyright (c) 2015 Jun Zhou
 * @license https://github.com/zither/Memo/blob/master/LICENSE (MIT License)
 */
-namespace Memo;
+namespace Memo\Services;
 
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
