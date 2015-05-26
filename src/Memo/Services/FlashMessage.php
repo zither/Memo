@@ -59,8 +59,8 @@ class FlashMessage implements ServiceProviderInterface
     {
         if (!isset($_SESSION[$this->storageKey])) {
             $_SESSION[$this->storageKey] = [];
-            $this->storage =& $_SESSION[$this->storageKey];
         }
+        $this->storage =& $_SESSION[$this->storageKey];
         $this->storage["fromPrevious"] = [];
 
         if (isset($this->storage["forNext"]) && is_array($this->storage["forNext"])) {
