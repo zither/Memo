@@ -8,7 +8,7 @@
 */
 namespace Memo;
 
-use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class App extends \Pimple\Container

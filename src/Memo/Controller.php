@@ -8,7 +8,7 @@
 */
 namespace Memo;
 
-use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class Controller 
@@ -18,7 +18,7 @@ class Controller
     /**
      * Request
      *
-     * @var \Psr\Http\Message\RequestInterface;
+     * @var \Psr\Http\Message\ServerRequestInterface;
      */
     protected $request;
 
@@ -32,10 +32,10 @@ class Controller
     /**
      * Constructor
      *
-     * @param RequestInterface $request
+     * @param ServerRequestInterface $request
      * @param ResponseInterface $response
      */
-    public function __construct(RequestInterface $request, ResponseInterface $response)
+    public function __construct(ServerRequestInterface $request, ResponseInterface $response)
     {
         $this->request = $request;
         $this->response = $response;

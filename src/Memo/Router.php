@@ -8,7 +8,7 @@
 */
 namespace Memo;
 
-use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 class Router
 {
@@ -123,11 +123,11 @@ class Router
     /**
      * Dispatch request
      *
-     * @param RequestInterface $request
+     * @param ServerRequestInterface $request
      *
      * @return array 
      */
-    public function dispatch(RequestInterface $request)
+    public function dispatch(ServerRequestInterface $request)
     {
         $pathInfo = $request->getUri()->getPath();
         if (!empty(trim($pathInfo, "/")) && !$this->matchRoutes($pathInfo)) {
