@@ -36,15 +36,7 @@ class App extends \Pimple\Container
         };
 
         $this["request"] = $this->factory(function ($c) {
-            $env = $c["environment"];
-            $method = $env["REQUEST_METHOD"];
-            $uri = \Slim\Http\Uri::createFromEnvironment($env);
-            $headers = \Slim\Http\Headers::createFromEnvironment($env);
-            $cookies = \Slim\Http\Cookies::parseHeader($headers->get("Cookie", []));
-            $serverParams = $env->all();
-            $body = new \Slim\Http\Body(fopen("php://input", "r"));
-
-            return new \Slim\Http\Request($method, $uri, $headers, $cookies, $serverParams, $body);
+            return \Slim\Http\Request::createFromEnvironment($c["environment"]);
         });
 
         $this["response"] = $this->factory(function ($c) {
