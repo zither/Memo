@@ -89,10 +89,10 @@ class App extends \Pimple\Container
         } catch (\Memo\Exception $e) {
             $response = $e->getResponse();
         } catch (\Exception $e) {
-            if (false === $this["settings"]["debug"]) {
-                $content = "Not Found";
-            } else {
+            if ($this["settings"]["debug"]) {
                 $content = $e->getMessage();
+            } else {
+                $content = "Not Found";
             }
             $response = $this["response"]->withStatus(404)
                                          ->withHeader('Content-Type', 'text/html')
