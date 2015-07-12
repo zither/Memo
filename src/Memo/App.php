@@ -177,11 +177,9 @@ class App extends \Pimple\Container
 
         if ($hasBody) {
             $body = $response->getBody();
-            if ($body->isAttached()) {
-                $body->rewind();
-                while (!$body->eof()) {
-                    echo $body->read(1024);
-                }
+            $body->rewind();
+            while (!$body->eof()) {
+                echo $body->read(1024);
             }
         }    
         
