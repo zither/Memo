@@ -3,9 +3,9 @@ namespace App\Controllers;
 
 class Index extends \Memo\Controller 
 {
-    public function beforeActionHook()
+    public function beforeActionHook(array $routeInfo)
     {
-        $this->container["foo"] = "BAR";
+        $this->container["foo"] = sprintf("action:%s", $routeInfo["action"]);
     }
 
     public function helloGet()

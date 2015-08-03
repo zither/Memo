@@ -77,7 +77,7 @@ class AppTest extends PHPUnit_Framework_TestCase
 
     public function testRunWithBeforeActionHook()
     {
-        $this->expectOutputString("BAR");
+        $this->expectOutputString("action:fooGet");
         $app = new App();
         $app["environment"] = function () {
             return (new \Slim\Http\Environment())->mock([

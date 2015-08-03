@@ -8,10 +8,21 @@
 */
 namespace Memo;
 
+use Exception;
+use RuntimeException;
+use BadMethodCallException;
+use Memo\Exception as MemoException;
+
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class App extends \Pimple\Container
+use Pimple\Container;
+use Slim\Http\Environment;
+use Slim\Http\Headers;
+use Slim\Http\Request;
+use Slim\Http\Response;
+
+class App extends Container
 {
     protected $defaultSettings = [
         "cookieLifetime" => "20 minutes",
@@ -32,16 +43,16 @@ class App extends \Pimple\Container
         };
 
         $this["environment"] = function () {
-            return new \Slim\Http\Environment($_SERVER);
+            return new Environment($_SERVER);
         };
 
         $this["request"] = $this->factory(function ($c) {
-            return \Slim\Http\Request::createFromEnvironment($c["environment"]);
+            return Request::createFromEnvironment($c["environment"]);
         });
 
         $this["response"] = $this->factory(function ($c) {
-            $headers = new \Slim\Http\Headers(["Content-Type" => "text/html"]);
-            $response = new \Slim\Http\Response(200, $headers);
+            $headers = new Headers(["Content-Type" => "text/html"]);
+            $response = new Response(200, $headers);
 
             return $response->withProtocolVersion($c["settings"]["httpVersion"]);
         });
@@ -74,13 +85,13 @@ class App extends \Pimple\Container
             $callable = $this->resolveCallable($routeInfo);
             $response = call_user_func_array($callable, $routeInfo["params"]);
             if (!$response instanceof ResponseInterface) {
-                throw new \RuntimeException(
+                throw new RuntimeException(
                     "Controller must return instance of \Psr\Http\Message\ResponseInterface"
                 );
             }
-        } catch (\Memo\Exception $e) {
+        } catch (MemoException $e) {
             $response = $e->getResponse();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             if ($this["settings"]["debug"]) {
                 $content = $e->getMessage();
             } else {
@@ -99,8 +110,8 @@ class App extends \Pimple\Container
      *
      * @param array $routeInfo
      *
-     * @throws \RuntimeException if controller does not exist
-     * @throws \BadMethodCallException if action is undefined
+     * @throws RuntimeException if controller does not exist
+     * @throws BadMethodCallException if action is undefined
      *
      * @return array
      */
@@ -113,21 +124,21 @@ class App extends \Pimple\Container
         );
 
         if (!class_exists($controllerName)) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 sprintf("Controller does not exist: %s", $controllerName)
             );
         }
 
         $controller = new $controllerName($this["request"], $this["response"]);
-        if ($controller instanceof \Memo\Controller) {
+        if ($controller instanceof Controller) {
             $controller->setContainer($this); 
         } 
         if (method_exists($controller, "beforeActionHook")) {
-            $controller->beforeActionHook();
+            $controller->beforeActionHook($routeInfo);
         }
 
         if (!method_exists($controller, $routeInfo["action"])) {
-            throw new \BadMethodCallException(
+            throw new BadMethodCallException(
                 sprintf(
                     "Call to undefined method %s::%s",
                     $controllerName,

@@ -8,6 +8,7 @@
 */
 namespace Memo;
 
+use Memo\Exception as MemoException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -18,14 +19,14 @@ class Controller
     /**
      * Request
      *
-     * @var \Psr\Http\Message\ServerRequestInterface;
+     * @var ServerRequestInterface;
      */
     protected $request;
 
     /**
      * Response
      *
-     * @var \Psr\Http\Message\ResponseInterface;
+     * @var ResponseInterface;
      */
     protected $response;
 
@@ -46,11 +47,11 @@ class Controller
      *
      * @param ResponseInterface $response
      *
-     * @throws \Memo\Exception
+     * @throws MemoException
      */
     public function stop(ResponseInterface $response)
     {
-        throw (new \Memo\Exception())->setResponse($response);
+        throw (new MemoException())->setResponse($response);
     }
 
     /**
@@ -59,7 +60,7 @@ class Controller
      * @param int    $status  The desired Http status
      * @param string $message The desired Http message
      *
-     * @throws \Memo\Exception
+     * @throws MemoException
      */
     public function halt($status, $message = "")
     {
@@ -74,7 +75,7 @@ class Controller
      * @param string $url
      * @param int $status
      *
-     * @throws \Memo\Exception
+     * @throws MemoException
      */
     public function redirect($url, $status = 302)
     {

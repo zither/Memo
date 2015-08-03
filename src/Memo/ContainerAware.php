@@ -8,23 +8,25 @@
 */
 namespace Memo;
 
+use ArrayAccess;
+
 trait ContainerAware
 {
     /**
      * Container
      *
-     * @var \ArrayAccess|null
+     * @var ArrayAccess|null
      */
     protected $container = null;
 
     /**
      * Set container
      *
-     * @param \ArrayAccess $container
+     * @param ArrayAccess $container
      *
      * @return self
      */
-    public function setContainer(\ArrayAccess $container)
+    public function setContainer(ArrayAccess $container)
     {
         $this->container = $container;    
         return $this;

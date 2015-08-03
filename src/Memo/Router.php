@@ -8,6 +8,7 @@
 */
 namespace Memo;
 
+use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
 
 class Router
@@ -75,12 +76,12 @@ class Router
      *
      * @param string $controller
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function setDefaultController($controller) 
     {
         if (!is_string($controller)) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 sprintf(
                     "Controller name must be of the type string, %s given.",
                     getType($controller)
@@ -105,12 +106,12 @@ class Router
      *
      * @param string $action
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function setDefaultAction($action)
     {
         if (!is_string($action)) {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 sprintf(
                     "Action name must be of the type string, %s given.",
                     getType($action)

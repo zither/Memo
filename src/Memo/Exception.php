@@ -15,7 +15,7 @@ class Exception extends \Exception
     /**
      * Response
      *
-     * @var \Psr\Http\Message\ResponseInterface;
+     * @var ResponseInterface;
      */
     protected $response;
 
