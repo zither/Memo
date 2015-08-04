@@ -10,6 +10,12 @@ namespace Memo\Services;
 
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
+use SplQueue;
+use SplStack;
+use Exception;
+use LogicException;
+use InvalidArgumentException;
+use BadMethodCallException;
 
 class View implements ServiceProviderInterface
 {
@@ -30,7 +36,7 @@ class View implements ServiceProviderInterface
     /**
      * Helper instance
      *
-     * @var mixed
+     * @var object
      */
     protected $helper = null;
 
@@ -51,7 +57,7 @@ class View implements ServiceProviderInterface
     /**
      * section status stack
      *
-     * @var array
+     * @var SqlStack
      * @link http://php.net/manual/en/class.splstack.php
      */
     protected $sectionStack;
@@ -59,7 +65,7 @@ class View implements ServiceProviderInterface
     /**
      * Layout queue
      *
-     * @var \SplQueue
+     * @var SplQueue
      * @link http://php.net/manual/en/class.splqueue.php
      */
     protected $layoutQueue;
@@ -71,8 +77,8 @@ class View implements ServiceProviderInterface
      */
     public function __construct(Array $userSettings = [])
     {
-        $this->layoutQueue = new \SplQueue();
-        $this->sectionStack = new \SplStack();
+        $this->layoutQueue = new SplQueue();
+        $this->sectionStack = new SplStack();
 
         $validProperties = ["template", "folders", "helper"];
         $userSettings = array_intersect_key(
@@ -154,12 +160,12 @@ class View implements ServiceProviderInterface
      *
      * Remove last section from the section stack
      *
-     * @throws \LogicException
+     * @throws LogicException
      */
     public function close()
     {
         if ($this->sectionStack->isEmpty()) {
-            throw new \LogicException(
+            throw new LogicException(
                 "Must open a section before calling the close method."
             );
         }
@@ -201,7 +207,7 @@ class View implements ServiceProviderInterface
      * The template's layout could be nested
      *
      * @return string
-     * @throws \LogicExcetpion
+     * @throws LogicExcetpion
      */
     public function render()
     {
@@ -216,14 +222,14 @@ class View implements ServiceProviderInterface
             while (!$this->layoutQueue->isEmpty()) {
                 include $this->getPath($this->layoutQueue->dequeue());
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->recursiveObEndClean($level);
             throw $e;
         }    
 
         if (!$this->sectionStack->isEmpty()) {
             $this->recursiveObEndClean($level);
-            throw new \LogicException("Not all of sections was closed.");
+            throw new LogicException("Not all of sections was closed.");
         }
         return trim(ob_get_clean());
     }
@@ -234,7 +240,7 @@ class View implements ServiceProviderInterface
      * @param string $template
      *
      * @return string
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function getPath($template)
     {
@@ -248,7 +254,7 @@ class View implements ServiceProviderInterface
                 return $templatePath;
             }
         }
-        throw new \InvalidArgumentException(
+        throw new InvalidArgumentException(
             sprintf("Invalid template: %s.php", $template)
         );
     }
@@ -270,7 +276,7 @@ class View implements ServiceProviderInterface
      *
      * @param object $helper
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function setHelper($helper)
     {
@@ -279,7 +285,7 @@ class View implements ServiceProviderInterface
                 "Helper must be of the type object, %s given.",
                 getType($helper)
             );
-            throw new \InvalidArgumentException($message);
+            throw new InvalidArgumentException($message);
         }
         $this->helper = $helper;
     }
@@ -304,12 +310,12 @@ class View implements ServiceProviderInterface
      * @param mixed $arguments
      *
      * @return mixed
-     * @throws \BadMethodCallException
+     * @throws BadMethodCallException
      */
     public function __call($method, $arguments) 
     {
         if (is_null($this->helper) || !method_exists($this->helper, $method)) {
-            throw new \BadMethodCallException(
+            throw new BadMethodCallException(
                 sprintf("Call to undefined method %s::%s!", __CLASS__, $method)
             );        
         }

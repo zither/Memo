@@ -10,6 +10,7 @@ namespace Memo\Services;
 
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
+use RuntimeException;
 
 class FlashMessage implements ServiceProviderInterface
 {
@@ -47,7 +48,7 @@ class FlashMessage implements ServiceProviderInterface
     public function __construct()
     {
         if (!session_id()) {
-            throw new \RuntimeException("Session not found");
+            throw new RuntimeException("Session not found");
         }
         $this->initStorage();
     }
