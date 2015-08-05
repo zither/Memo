@@ -1,3 +1,3 @@
 # Memo
 
-Memo Framework.
+A micro PHP Framework based on Slim Http component.
