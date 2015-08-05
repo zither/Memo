@@ -1,4 +1,17 @@
 {
+    "name": "zither/memo",
+    "type": "library",
+    "description": "A micro PHP Framework based on Slim Http component",
+    "homepage": "https://github.com/zither/Memo",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jun Zhou",
+            "email": "zhoujun@shouhuiben.net",
+            "homepage": "http://shouhuiben.net",
+            "role": "Developer"
+        }  
+    ],
     "require": {
         "php": ">=5.4.0",
         "pimple/pimple": "3.*",
