@@ -1,7 +1,7 @@
 {
     "name": "zither/memo",
     "type": "library",
-    "description": "A micro PHP Framework based on Slim Http component",
+    "description": "A micro PHP Framework based on Slim Http component.",
     "homepage": "https://github.com/zither/Memo",
     "license": "MIT",
     "authors": [
@@ -23,8 +23,8 @@
         "phpunit/phpunit": "*"
     },
     "autoload": {
-        "psr-0": {
-            "Memo": "src"
+        "psr-4": {
+            "Memo\\": "src\\Memo"
         }
     }
 }
