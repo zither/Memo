@@ -23,11 +23,11 @@ class Router
     public $routes = [];
 
     /**
-     * Controller prefix
+     * Controller namespace
      *
      * @var string
      */
-    public $controllerNamespace = "App\\Controller\\";
+    public $controllerNamespace = "App\\Controllers\\";
 
     /**
      * Controller name
