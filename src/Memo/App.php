@@ -117,12 +117,7 @@ class App extends Container
      */
     protected function resolveCallable(array $routeInfo)
     {
-        $controllerName = sprintf(
-            "%s\\%s",
-            "\\App\\Controllers", 
-            $routeInfo["controller"]
-        );
-
+        $controllerName = $routeInfo["controller"];
         if (!class_exists($controllerName)) {
             throw new RuntimeException(
                 sprintf("Controller does not exist: %s", $controllerName)

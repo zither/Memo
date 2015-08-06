@@ -1,5 +1,8 @@
 <?php
+namespace Memo\Tests;
 
+use PHPUnit_Framework_TestCase;
+use Exception;
 use Memo\Controller;
 use Slim\Http\Environment;
 use Slim\Http\Uri;
@@ -10,7 +13,6 @@ use Slim\Http\Collection;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Pimple\Container;
-
 
 class ControllerTest extends PHPUnit_Framework_TestCase 
 {
@@ -25,14 +27,14 @@ class ControllerTest extends PHPUnit_Framework_TestCase
 
     protected function createRequest()
     {
-        $env = (new Environment())->mock(array(
+        $env = (new Environment())->mock([
             "PATH_INFO" => "/index/hello/", 
             "SCRIPT_NAME" => "/index.php"            
-        ));
+        ]);
         $method = $env["REQUEST_METHOD"];
         $uri = Uri::createFromEnvironment($env);
         $headers = Headers::createFromEnvironment($env);
-        $cookies = Cookies::parseHeader($headers->get("Cookie", array()));
+        $cookies = Cookies::parseHeader($headers->get("Cookie", []));
         $serverParams = $env->all();
         $body = new Body(fopen("php://input", "r"));
         return new Request($method, $uri, $headers, $cookies, $serverParams, $body);    
@@ -60,7 +62,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
         try {
             $controller = new Controller($this->request, $this->response);
             $controller->halt(404, "Controller Halt");
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->assertInstanceOf("\\Memo\\Exception", $e);
             $this->assertEquals(404, $e->getResponse()->getStatusCode());
             $this->assertEquals("Controller Halt", (string)$e->getResponse()->getBody());
@@ -72,7 +74,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
         try {
             $controller = new Controller($this->request, $this->response);
             $response = $controller->redirect("/index");
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->assertInstanceOf("\\Memo\\Exception", $e);
             $response = $e->getResponse();
             $this->assertTrue($response->isRedirect());

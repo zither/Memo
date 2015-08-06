@@ -1,7 +1,9 @@
 <?php
-namespace App\Controllers;
+namespace Memo\Tests\Mocks\Controllers;
 
-class Index extends \Memo\Controller 
+use Memo\Controller;
+
+class Index extends Controller 
 {
     public function beforeActionHook(array $routeInfo)
     {

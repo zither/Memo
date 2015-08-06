@@ -1,5 +1,9 @@
 <?php
-use \Memo\Services\FlashMessage;
+namespace Memo\Tests\Services;
+
+use PHPUnit_Framework_TestCase;
+use PHPUnit_Framework_Assert;
+use Memo\Services\FlashMessage;
 
 class ObjectMessage {
     public function __toString()

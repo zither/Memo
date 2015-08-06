@@ -23,6 +23,13 @@ class Router
     public $routes = [];
 
     /**
+     * Controller prefix
+     *
+     * @var string
+     */
+    public $controllerNamespace = "App\\Controller\\";
+
+    /**
      * Controller name
      *
      * @var string
@@ -59,6 +66,24 @@ class Router
     public function addRoute($route, $callback)
     {
         array_push($this->routes, [$route => $callback]);
+    }
+
+    /**
+     * Set controller namespace
+     *
+     * @param string $namespace
+     *
+     * @throw InvalidArgumentException
+     */
+    public function setControllerNamespace($namespace)
+    {
+        if (!is_string($namespace)) {
+            throw new InvalidArgumentException(sprintf(
+                "Controller prefix must be of the type string, %s given",
+                getType($namespace)
+            ));
+        }
+        $this->controllerNamespace = $namespace;
     }
 
     /**
@@ -135,7 +160,7 @@ class Router
             $this->parsePathInfo($pathInfo);
         }
 
-        $controller = ucfirst(strtolower($this->controller));
+        $controller = $this->controllerNamespace . ucfirst(strtolower($this->controller));
         $this->methodExt = ucfirst(strtolower($request->getMethod()));
         $action = strtolower($this->action) . $this->methodExt;
 

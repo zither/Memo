@@ -1,7 +1,9 @@
 <?php
-use \Memo\Services\View;
+namespace Memo\Tests\Services;
 
-define("DATA_DIR", dirname(__DIR__) . "/data");
+use PHPUnit_Framework_TestCase;
+use StdClass;
+use Memo\Services\View;
 
 class ViewTest extends PHPUnit_Framework_TestCase
 {
@@ -143,7 +145,7 @@ class ViewTest extends PHPUnit_Framework_TestCase
      */
     public function testSetHelper()
     {
-        $helper = new stdclass();
+        $helper = new Stdclass();
         $this->view->setHelper($helper);
         $this->assertEquals($helper, $this->view->helper);
         $this->view->setHelper("badHelper");

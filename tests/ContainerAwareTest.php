@@ -1,10 +1,13 @@
 <?php
+namespace Memo\Tests;
 
+use PHPUnit_Framework_TestCase;
 use Pimple\Container;
+use Memo\ContainerAware;
 
 class Bag
 {
-    use \Memo\ContainerAware;
+    use ContainerAware;
 } 
 
 class ContainerAwareTest extends PHPUnit_Framework_TestCase
