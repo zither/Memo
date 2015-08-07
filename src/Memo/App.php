@@ -97,9 +97,9 @@ class App extends Container
             } else {
                 $content = "Not Found";
             }
-            $response = $this["response"]->withStatus(404)
-                                         ->withHeader('Content-Type', 'text/html')
-                                         ->write($content);
+
+            $response = $this["response"]->withStatus(404);
+            $response->getBody()->write($content);
         }
 
         return $this->sendResponse($response);
@@ -154,17 +154,7 @@ class App extends Container
      */
     protected function sendResponse(ResponseInterface $response)
     {
-        $statusCode = $response->getStatusCode();
-        $hasBody = (204 !== $statusCode && 304 !== $statusCode);
-        if (!$hasBody) {
-            $response = $response->withoutHeader("Content-Type")
-                                 ->withoutHeader("Content-Length");
-        } else {
-            $size = $response->getBody()->getSize();
-            if (null !== $size) {
-                $response = $response->withHeader("Content-Length", $size);
-            }
-        }
+        $response = $this->finalize($response);
 
         if (!headers_sent()) {
             header(sprintf(
@@ -181,14 +171,47 @@ class App extends Container
             }
         }
 
-        if ($hasBody) {
+        if (!$this->isEmptyResponse($response)) {
             $body = $response->getBody();
             $body->rewind();
             while (!$body->eof()) {
                 echo $body->read(1024);
+                if (connection_status() != CONNECTION_NORMAL) {
+                    break;
+                }
             }
         }    
         
         return $response;
+    }
+
+    /**
+     * Finalize response
+     *
+     * @url https://github.com/slimphp/Slim/blob/3.x/Slim/App.php#L468
+     */
+    protected function finalize(ResponseInterface $response) 
+    {
+        if ($this->isEmptyResponse($response)) {
+            return $response->withoutHeader("Content-Type")->withoutHeader("Content-Length");
+        }
+
+        $size = $response->getBody()->getSize();
+        if (!is_null($size)) {
+            $response = $response->withHeader("Content-Length", $size);
+        }
+
+        return $response;
+    }
+
+    /**
+     * Helper method, which returns true if the provided response must not
+     * output a body and false if the response could have a body 
+     *
+     * @url https://github.com/slimphp/Slim/blob/3.x/Slim/App.php#L491
+     */
+    protected function isEmptyResponse(ResponseInterface $response)
+    {
+        return in_array($response->getStatusCode(), [204, 205, 304]);
     }
 }
