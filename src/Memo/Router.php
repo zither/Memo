@@ -72,8 +72,7 @@ class Router
      * Set controller namespace
      *
      * @param string $namespace
-     *
-     * @throw InvalidArgumentException
+     * @throw InvalidArgumentException for invalid namespace
      */
     public function setControllerNamespace($namespace)
     {
@@ -100,8 +99,7 @@ class Router
      * Set default controller
      *
      * @param string $controller
-     *
-     * @throws InvalidArgumentException
+     * @throws InvalidArgumentException for invalid controller name
      */
     public function setDefaultController($controller) 
     {
@@ -130,8 +128,7 @@ class Router
      * Set default action
      *
      * @param string $action
-     *
-     * @throws InvalidArgumentException
+     * @throws InvalidArgumentException for invalid action
      */
     public function setDefaultAction($action)
     {
@@ -150,7 +147,6 @@ class Router
      * Dispatch request
      *
      * @param ServerRequestInterface $request
-     *
      * @return array 
      */
     public function dispatch(ServerRequestInterface $request)
@@ -171,7 +167,6 @@ class Router
      * Match custom routes
      *
      * @param mixed $pathInfo
-     *
      * @return boolean
      */
     protected function matchRoutes($pathInfo)
@@ -198,7 +193,6 @@ class Router
      *
      * @param mixed $route
      * @param array $matches
-     *
      * @return boolean
      */
     protected function processMatchedRoute($route, $matches)

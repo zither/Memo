@@ -23,7 +23,6 @@ trait ContainerAware
      * Set container
      *
      * @param ArrayAccess $container
-     *
      * @return self
      */
     public function setContainer(ArrayAccess $container)
@@ -36,7 +35,6 @@ trait ContainerAware
      * Container getter
      *
      * @param string $key
-     *
      * @return mixed
      */
     public function __get($key)

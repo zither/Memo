@@ -109,11 +109,9 @@ class App extends Container
      * Resolve callable
      *
      * @param array $routeInfo
-     *
+     * @return array
      * @throws RuntimeException if controller does not exist
      * @throws BadMethodCallException if action is undefined
-     *
-     * @return array
      */
     protected function resolveCallable(array $routeInfo)
     {
@@ -149,7 +147,6 @@ class App extends Container
      * Send response
      *
      * @param ResponseInterface $response
-     *
      * @return ResponseInterface
      */
     protected function sendResponse(ResponseInterface $response)
@@ -188,7 +185,7 @@ class App extends Container
     /**
      * Finalize response
      *
-     * @url https://github.com/slimphp/Slim/blob/3.x/Slim/App.php#L468
+     * @link https://github.com/slimphp/Slim/blob/3.x/Slim/App.php#L468
      */
     protected function finalize(ResponseInterface $response) 
     {
@@ -208,7 +205,7 @@ class App extends Container
      * Helper method, which returns true if the provided response must not
      * output a body and false if the response could have a body 
      *
-     * @url https://github.com/slimphp/Slim/blob/3.x/Slim/App.php#L491
+     * @link https://github.com/slimphp/Slim/blob/3.x/Slim/App.php#L491
      */
     protected function isEmptyResponse(ResponseInterface $response)
     {

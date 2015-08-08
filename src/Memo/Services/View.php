@@ -182,7 +182,6 @@ class View implements ServiceProviderInterface
      *
      * @param string $key
      * @param string|null $default
-     *
      * @return string|null
      */
     public function section($key, $default = null)
@@ -238,7 +237,6 @@ class View implements ServiceProviderInterface
      * Get template's path from folders, the first found is used.
      *
      * @param string $template
-     *
      * @return string
      * @throws InvalidArgumentException
      */
@@ -275,7 +273,6 @@ class View implements ServiceProviderInterface
      * Set helper instance
      *
      * @param object $helper
-     *
      * @throws InvalidArgumentException
      */
     public function setHelper($helper)
@@ -308,7 +305,6 @@ class View implements ServiceProviderInterface
      *
      * @param mixed $method
      * @param mixed $arguments
-     *
      * @return mixed
      * @throws BadMethodCallException
      */

@@ -33,7 +33,6 @@ class Exception extends \Exception
      * Set response
      *
      * @param ResponseInterface $response
-     *
      * @return self
      */
     public function setResponse(ResponseInterface $response)

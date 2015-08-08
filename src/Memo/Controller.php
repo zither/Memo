@@ -10,9 +10,8 @@ namespace Memo;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Memo\Exception as MemoException;
-use Slim\Http\Body;
 use InvalidArgumentException;
+use Memo\Exception as MemoException;
 
 class Controller 
 {
@@ -45,10 +44,33 @@ class Controller
     }
 
     /**
+     * Bind output to response
+     *
+     * @param string|object $output
+     * @param ResponseInterface|null $response
+     * @return ResponseInterface
+     * @throws InvalidArgumentException for invalid output or response
+     */
+    public function bindOutput($output, $response = null)
+    {
+        if (!is_string($output) && !method_exists($output, "__toString")) {
+            throw new InvalidArgumentException("Output must be a string");
+        }
+
+        if (null !== $response && !$response instanceof ResponseInterface) {
+            throw new InvalidArgumentException("Expected a ResponseInterface");
+        }
+
+        $response = null === $response ? $this->response : $response;
+        $response->getBody()->write($output);
+
+        return $response;
+    }
+
+    /**
      * Stop
      *
      * @param ResponseInterface $response
-     *
      * @throws MemoException
      */
     public function stop(ResponseInterface $response)
@@ -61,7 +83,6 @@ class Controller
      *
      * @param int    $status  The desired Http status
      * @param string $message The desired Http message
-     *
      * @throws MemoException
      */
     public function halt($status, $message = "")
@@ -76,33 +97,11 @@ class Controller
      *
      * @param string $url
      * @param int $status
-     *
      * @throws MemoException
      */
     public function redirect($url, $status = 302)
     {
         $response = $this->response->withStatus($status)->withHeader("Location", $url);
         $this->stop($response);
-    }
-
-    /**
-     * Bind output to response
-     *
-     * @param ResponseInterface $response
-     * @param mixed $output
-     *
-     * @return ResponseInterface
-     * @throws InvalidArgumentException
-     */
-    public function bindOutput(ResponseInterface $response, $output)
-    {
-        if (!is_string($output) && !method_exists($output, "__toString")) {
-            throw new InvalidArgumentException("Output must be a string.");
-        }
-
-        $body = new Body(fopen('php://temp', 'r+'));
-        $body->write($output);
-
-        return $response->withBody($body);
     }
 }

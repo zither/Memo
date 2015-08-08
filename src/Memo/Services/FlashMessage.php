@@ -32,7 +32,6 @@ class FlashMessage implements ServiceProviderInterface
      * Register Service provider interface
      *
      * @param Container $container
-     *
      * @return self
      */
     public function register(Container $container)
@@ -75,7 +74,6 @@ class FlashMessage implements ServiceProviderInterface
      *
      * @param string $key
      * @param null $default
-     *
      * @return null|string
      */
     public function get($key, $default = null)
@@ -102,8 +100,7 @@ class FlashMessage implements ServiceProviderInterface
     /**
      * Does the storage have a given key
      *
-     * @param mixed $key
-     *
+     * @param string $key
      * @return boolean
      */
     public function has($key)

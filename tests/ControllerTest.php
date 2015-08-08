@@ -52,7 +52,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
     public function testBindOutput()
     {
         $controller = new Controller($this->request, $this->response);
-        $response = $controller->bindOutput($this->response, "String Output");
+        $response = $controller->bindOutput("String Output");
         $this->assertEquals("String Output", (string)$response->getBody());
     }
 
@@ -60,18 +60,38 @@ class ControllerTest extends PHPUnit_Framework_TestCase
     {
         $objectOutput = new ObjectOutput();
         $controller = new Controller($this->request, $this->response);
-        $response = $controller->bindOutput($this->response, $objectOutput);
+        $response = $controller->bindOutput($objectOutput);
         $this->assertEquals("Object Output", (string)$response->getBody());    
     }
 
-    public function testBindOutputWithInvalidArgument()
+    public function testBindOutputWithNewResponse()
+    {
+        $controller = new Controller($this->request, $this->response);
+        $newResponse = $this->response->withStatus(404);
+        $response = $controller->bindOutput("New Response", $newResponse);
+        $this->assertEquals(404, $response->getStatusCode());
+        $this->assertEquals("New Response", (string)$response->getBody());
+    }
+
+    public function testBindOutputWithInvalidOutput()
     {
         try {
             $controller = new Controller($this->request, $this->response);
-            $controller->bindOutput($this->response, []);
+            $controller->bindOutput([]);
         } catch (Exception $e) {
             $this->assertInstanceOf("InvalidArgumentException", $e);
-            $this->assertEquals("Output must be a string.", $e->getMessage());
+            $this->assertEquals("Output must be a string", $e->getMessage());
+        }
+    }
+
+    public function testBindOutputWithInvalidResponse()
+    {
+        try {
+            $controller = new Controller($this->request, $this->response);
+            $controller->bindOutput("Invalid Response", []);
+        } catch (Exception $e) {
+            $this->assertInstanceOf("InvalidArgumentException", $e);
+            $this->assertEquals("Expected a ResponseInterface", $e->getMessage());
         }
     }
 
