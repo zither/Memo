@@ -8,9 +8,11 @@
 */
 namespace Memo;
 
-use Memo\Exception as MemoException;
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Memo\Exception as MemoException;
+use Slim\Http\Body;
+use InvalidArgumentException;
 
 class Controller 
 {
@@ -81,5 +83,26 @@ class Controller
     {
         $response = $this->response->withStatus($status)->withHeader("Location", $url);
         $this->stop($response);
+    }
+
+    /**
+     * Bind output to response
+     *
+     * @param ResponseInterface $response
+     * @param mixed $output
+     *
+     * @return ResponseInterface
+     * @throws InvalidArgumentException
+     */
+    public function bindOutput(ResponseInterface $response, $output)
+    {
+        if (!is_string($output) && !method_exists($output, "__toString")) {
+            throw new InvalidArgumentException("Output must be a string.");
+        }
+
+        $body = new Body(fopen('php://temp', 'r+'));
+        $body->write($output);
+
+        return $response->withBody($body);
     }
 }

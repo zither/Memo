@@ -12,17 +12,17 @@ class Index extends Controller
 
     public function helloGet()
     {
-        return $this->response->write("Hello,world!");
+        return $this->bindOutput($this->response, "Hello,world!");
     }
 
     public function helloPost()
     {
-        return $this->response->write("POST");
+        return $this->bindOutput($this->response, "POST");
     }
 
     public function indexGet()
     {
-        return $this->response->write("Default Controller And Action");
+        return $this->bindOutput($this->response, "Default Controller And Action");
     }
 
     public function aboutGet()
@@ -37,11 +37,11 @@ class Index extends Controller
 
     public function hiGet($name)
     {
-        return $this->response->write("Hi $name");
+        return $this->bindOutput($this->response, sprintf("Hi %s", $name));
     }
 
     public function fooGet()
     {
-        return $this->response->write($this->container["foo"]);
+        return $this->bindOutput($this->response, $this->container["foo"]);
     }
 }

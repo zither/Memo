@@ -3,7 +3,6 @@ namespace Memo\Tests;
 
 use PHPUnit_Framework_TestCase;
 use Exception;
-use Memo\Controller;
 use Slim\Http\Environment;
 use Slim\Http\Uri;
 use Slim\Http\Headers;
@@ -13,6 +12,8 @@ use Slim\Http\Collection;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Pimple\Container;
+use Memo\Controller;
+use Memo\Tests\Mocks\ObjectOutput;
 
 class ControllerTest extends PHPUnit_Framework_TestCase 
 {
@@ -46,6 +47,32 @@ class ControllerTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf("\\Memo\\Controller", $controller);
         $this->assertAttributeEquals($this->request, "request", $controller);
         $this->assertAttributeEquals($this->response, "response", $controller);
+    }
+
+    public function testBindOutput()
+    {
+        $controller = new Controller($this->request, $this->response);
+        $response = $controller->bindOutput($this->response, "String Output");
+        $this->assertEquals("String Output", (string)$response->getBody());
+    }
+
+    public function testBindOutputWithObjectOutput()
+    {
+        $objectOutput = new ObjectOutput();
+        $controller = new Controller($this->request, $this->response);
+        $response = $controller->bindOutput($this->response, $objectOutput);
+        $this->assertEquals("Object Output", (string)$response->getBody());    
+    }
+
+    public function testBindOutputWithInvalidArgument()
+    {
+        try {
+            $controller = new Controller($this->request, $this->response);
+            $controller->bindOutput($this->response, []);
+        } catch (Exception $e) {
+            $this->assertInstanceOf("InvalidArgumentException", $e);
+            $this->assertEquals("Output must be a string.", $e->getMessage());
+        }
     }
 
     /**
