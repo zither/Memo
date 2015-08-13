@@ -170,7 +170,9 @@ class App extends Container
 
         if (!$this->isEmptyResponse($response)) {
             $body = $response->getBody();
-            $body->rewind();
+            if ($body->isSeekable()) {
+                $body->rewind();
+            }
             while (!$body->eof()) {
                 echo $body->read(1024);
                 if (connection_status() != CONNECTION_NORMAL) {
