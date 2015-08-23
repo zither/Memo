@@ -104,4 +104,20 @@ class Controller
         $response = $this->response->withStatus($status)->withHeader("Location", $url);
         $this->stop($response);
     }
+
+    /**
+     * Generate JSON response
+     *
+     * @param array $data
+     * @param int $statusCode
+     * @return ResponseInterface
+     */
+    public function jsonResponse(array $data, $statusCode = 200)
+    {
+        $jsonData = json_encode($data, JSON_UNESCAPED_UNICODE);
+        $response = $this->response
+            ->withStatus($statusCode)
+            ->withHeader("Content-Type", "application/json");
+        return $this->bindOutput($jsonData, $response);
+    }
 }

@@ -154,4 +154,31 @@ class ControllerTest extends PHPUnit_Framework_TestCase
         $controller->setContainer($container);
         $this->assertNull($controller->environment);
     }
+
+    public function testJsonResponseWithDefaultStatusCode()
+    {
+        $container = new Container();
+        $controller = new Controller($this->request, $this->response);
+        $controller->setContainer($container);
+        $response = $controller->jsonResponse(["status" => "ok"]);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertContains("application/json", $response->getHeader("Content-Type"));
+        $json = json_encode(["status" => "ok"], JSON_UNESCAPED_UNICODE);
+        $this->assertEquals($json, (string)$response->getBody());
+        
+    }
+
+    public function testJsonResponseWithCustomStatusCode()
+    {
+        $container = new Container();
+        $controller = new Controller($this->request, $this->response);
+        $controller->setContainer($container);
+        $response = $controller->jsonResponse(["status" => "error"], 400);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertContains("application/json", $response->getHeader("Content-Type"));
+        $json = json_encode(["status" => "error"], JSON_UNESCAPED_UNICODE);
+        $this->assertEquals($json, (string)$response->getBody());    
+    }
 }
